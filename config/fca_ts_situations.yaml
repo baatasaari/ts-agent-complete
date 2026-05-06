@@ -1,0 +1,543 @@
+# ==============================================================================
+# FCA TARGETED SUPPORT — SITUATIONS  (v2 — Production Grade)
+# ==============================================================================
+# Regulation : PS25/22 (final rules confirmed FCA Board 26 Feb 2026)
+#              CP25/17 (consultation basis)
+#              RAO new specified activity — live 6 April 2026
+# Rulebook   : COBS 9B (new chapter); PRIN 2A (Consumer Duty)
+# ------------------------------------------------------------------------------
+# DEFINITION (COBS 9B):
+#   A "situation" is a financial support need or objective that is shared by
+#   a group of consumers and that a firm reasonably considers can be addressed
+#   with a ready-made suggestion.  Situations must be pre-defined before any
+#   targeted support is delivered.  A firm may deliver targeted support:
+#     (a) at the CONSUMER'S REQUEST, or
+#     (b) at the FIRM'S INITIATIVE — only where the firm has reasonable grounds
+#         to believe the consumer is in a pre-defined situation.
+#   Situations may be defined by reference to existing OR potential customers.
+#   (PS25/22 paras 3.14–3.20; COBS 9B.3)
+#
+# SCOPE (in-scope products):
+#   DC pensions (accumulation & decumulation), Stocks and Shares ISAs, retail
+#   investment funds (UCITS/authorised), structured products (mass-market),
+#   structured deposits, investment-based life insurance products, GIAs.
+#
+# OUT OF SCOPE (hard exclusions):
+#   DB pension transfers, pension consolidation (any form), specific annuity
+#   products, non-mass-market investments, restricted mass-market investments
+#   (unlisted securities, qualifying crypto-assets), leveraged products where
+#   loss can exceed investment, products subject to FCA retail marketing
+#   restrictions, mortgages, pure protection insurance, PDS post-view services.
+#   (PS25/22 Ch.3; Mondaq / A&O Shearman Dec 2025)
+#
+# AI-AGENT NOTE (PS25/22 para 3.13):
+#   The FCA explicitly acknowledges tension between AI's capacity for
+#   high personalisation and the segment-based TS framework.  The agent
+#   must NOT use TS to deliver what is functionally individualised advice.
+# ==============================================================================
+
+schema_version: "2.0"
+regulation_live_date: "2026-04-06"
+gateway_open_date:    "2026-03-02"
+pir_due_by:           "2028-03-02"   # FCA post-implementation review ~2 years
+source_documents:
+  - id: "PS25/22"
+    url: "https://www.fca.org.uk/publication/policy/ps25-22.pdf"
+    confirmed_final: "2026-02-26"
+  - id: "CP25/17"
+    url: "https://www.fca.org.uk/publications/consultation-papers/cp25-17"
+
+# ------------------------------------------------------------------------------
+# GLOBAL ENUMERATIONS — referenced by situation records
+# ------------------------------------------------------------------------------
+trigger_types:
+  CONSUMER_REQUEST: >
+    Consumer explicitly requests targeted support or signals need during
+    a firm interaction (digital, telephone, branch).
+  FIRM_INITIATIVE: >
+    Firm proactively identifies consumer as likely in a pre-defined situation
+    using data signals. Firm must have REASONABLE GROUNDS before delivery.
+    Subject to PECR direct-marketing rules and ICO/FCA joint statement
+    Dec 2025. Workplace pension providers may use 'soft opt-in' following
+    HMT secondary legislation (HMT Dec 2025).
+
+evidence_signal_types:
+  TRANSACTIONAL:    "Signals derived from account / transaction data"
+  BEHAVIOURAL:      "Signals from digital engagement (page views, searches)"
+  DECLARED:         "Consumer-stated information during a journey"
+  MODELLED:         "Output of projection or scoring model applied at segment level"
+  LIFECYCLE_EVENT:  "Life-event trigger (salary change, address change, birth etc.)"
+  TEMPORAL:         "Time-based signal (tax year end, proximity to retirement age)"
+
+domains:
+  - RETAIL_INVESTMENTS
+  - DC_PENSION_ACCUMULATION
+  - DC_PENSION_DECUMULATION
+  - STRUCTURED_DEPOSITS
+  - INVESTMENT_BASED_LIFE_INSURANCE
+
+# ==============================================================================
+# SITUATIONS
+# ==============================================================================
+
+situations:
+
+  # ────────────────────────────────────────────────────────────────────────────
+  # DOMAIN: RETAIL INVESTMENTS
+  # ────────────────────────────────────────────────────────────────────────────
+
+  - id: SIT-INV-001
+    domain: RETAIL_INVESTMENTS
+    version: "2.0"
+    label: "Cash Drag — Under-invested Saver with Investible Assets"
+    description: >
+      Consumer holds a material level of investible assets (e.g. ≥ £10,000)
+      predominantly or entirely in cash savings accounts.  Consumer has not
+      considered, or has not acted to invest, in a Stocks and Shares ISA or
+      retail investment fund.  Real-terms purchasing power at risk from
+      inflation.
+    financial_need_or_objective: >
+      Grow savings above cash real return over the medium to long term by
+      beginning market-based investment in a tax-efficient wrapper.
+    trigger_type: FIRM_INITIATIVE
+    regulatory_basis:
+      - "PS25/22 para 1.2 — 23m consumers underserved; non-advised >£10k cash"
+      - "COBS 9B.3 — firm-initiative trigger"
+    evidence_signals:
+      - type: TRANSACTIONAL
+        description: "Cash savings balance ≥ £10,000 held for ≥ 6 months with no investment product"
+      - type: TRANSACTIONAL
+        description: "No active ISA investment subscription in current or prior tax year"
+      - type: BEHAVIOURAL
+        description: "Consumer viewed investment product pages but did not open an account"
+    delivery_channels: [digital_banking_app, online_platform, email_nudge, branch_referral]
+    linked_segments:   [SEG-INV-001]
+    linked_suggestion: SUG-INV-001
+    direct_marketing_note: >
+      Firm-initiative proactive outreach requires legal basis under PECR.
+      ICO/FCA joint statement (Dec 2025) clarifies permissible approaches.
+      Workplace pension providers may use 'soft opt-in' secondary legislation.
+    out_of_scope_flags: []
+
+  - id: SIT-INV-002
+    domain: RETAIL_INVESTMENTS
+    version: "2.0"
+    label: "First-Time Investor — Knowledge Barrier"
+    description: >
+      Consumer has never held an investment product.  Cites or exhibits lack
+      of knowledge or confidence as the primary barrier.  Seeking initial
+      direction on how and where to begin investing.
+    financial_need_or_objective: >
+      Begin investing for the first time with a low-barrier, structured
+      starting point that builds confidence and develops long-term savings habit.
+    trigger_type: CONSUMER_REQUEST
+    regulatory_basis:
+      - "PS25/22 para 2.2 — 40% cite knowledge as key barrier to investing"
+      - "COBS 9B.3"
+    evidence_signals:
+      - type: DECLARED
+        description: "Consumer states they have never invested or don't know where to start"
+      - type: TRANSACTIONAL
+        description: "No investment product held; no prior ISA subscription"
+      - type: BEHAVIOURAL
+        description: "'What is investing', 'how to invest' search terms in digital journey"
+    delivery_channels: [digital_onboarding, web_journey, call_centre]
+    linked_segments:   [SEG-INV-002]
+    linked_suggestion: SUG-INV-002
+    out_of_scope_flags: []
+
+  - id: SIT-INV-003
+    domain: RETAIL_INVESTMENTS
+    version: "2.0"
+    label: "ISA Allowance Non-Utilisation — Tax Year End"
+    description: >
+      Consumer has unused annual ISA allowance with fewer than 90 days to
+      tax year end (6 January – 5 April), holds cash savings qualifying for
+      ISA investment, and has not opened or contributed to a Stocks and Shares
+      ISA this tax year.
+    financial_need_or_objective: >
+      Utilise expiring annual ISA allowance to shelter investment returns from
+      income tax and capital gains tax before the allowance lapses.
+    trigger_type: FIRM_INITIATIVE
+    regulatory_basis:
+      - "COBS 9B.3 — firm-initiative; temporal evidence signal"
+      - "PS25/22 para 3.17 — reasonable grounds requirement"
+    evidence_signals:
+      - type: TEMPORAL
+        description: "Date within final 90 days of tax year (on or after 6 January)"
+      - type: TRANSACTIONAL
+        description: "No S&S ISA subscription in current tax year; cash balance ≥ £500"
+      - type: TRANSACTIONAL
+        description: "Annual ISA limit not yet fully subscribed"
+    delivery_channels: [digital_banking_app, proactive_push_notification, email_nudge]
+    linked_segments:   [SEG-INV-003]
+    linked_suggestion: SUG-INV-003
+    out_of_scope_flags: []
+
+  - id: SIT-INV-004
+    domain: RETAIL_INVESTMENTS
+    version: "2.0"
+    label: "Lump Sum Capital Event — Investment Direction"
+    description: >
+      Consumer has received or is expecting a one-off capital sum (inheritance,
+      redundancy, property proceeds, maturing bond, bonus) and has not placed
+      an investment instruction for those funds.
+    financial_need_or_objective: >
+      Deploy capital lump sum into an appropriate investment vehicle to begin
+      compounding returns rather than holding in low-yield cash.
+    trigger_type: [CONSUMER_REQUEST, FIRM_INITIATIVE]
+    regulatory_basis:
+      - "COBS 9B.3"
+      - "PS25/22 para 3.15 — fluid process for situation + characteristic definition"
+    evidence_signals:
+      - type: TRANSACTIONAL
+        description: >
+          Large atypical credit to current or savings account (£5,000–£75,000)
+          inconsistent with regular salary or standing order pattern
+      - type: DECLARED
+        description: "Consumer declares receipt or expected receipt of lump sum"
+      - type: BEHAVIOURAL
+        description: "Consumer accesses 'investing a lump sum' product page"
+    delivery_channels: [branch, digital_platform, telephone, relationship_manager_referral]
+    linked_segments:   [SEG-INV-004]
+    linked_suggestion: SUG-INV-004
+    escalation_threshold: >
+      If lump sum > £75,000 identified during journey, exit TS and signpost to
+      regulated financial adviser and MoneyHelper.
+    out_of_scope_flags: []
+
+  - id: SIT-INV-005
+    domain: RETAIL_INVESTMENTS
+    version: "2.0"
+    label: "Dormant / Lapsed Investment Account — Re-engagement"
+    description: >
+      Consumer holds an existing investment account (S&S ISA, GIA, investment
+      bond) that has been inactive for ≥ 12 months with no transactions,
+      contributions, or portfolio changes.  Consumer may be unaware of
+      performance or drift from original intent.
+    financial_need_or_objective: >
+      Re-engage consumer with their existing investment to ensure it remains
+      broadly aligned with their situation and that inaction is a conscious
+      choice rather than disengagement.
+    trigger_type: FIRM_INITIATIVE
+    regulatory_basis:
+      - "PS25/22 monitoring obligations — COBS 9B.10; PROD; Consumer Duty PRIN 2A"
+      - "PS25/22 para 3.30 — suggestion may involve not taking an action"
+    evidence_signals:
+      - type: TEMPORAL
+        description: "No account transaction or log-in for ≥ 12 months"
+      - type: TRANSACTIONAL
+        description: "Holding in investment account with zero contribution in current tax year"
+    delivery_channels: [digital_platform, email_nudge, annual_statement_insert]
+    linked_segments:   [SEG-INV-005]
+    linked_suggestion: SUG-INV-005
+    out_of_scope_flags: []
+    notes: >
+      PS25/22 para 3.30 confirms suggestion may include 'not taking an action'.
+      Re-engagement suggestion may result in a 'do nothing' ready-made suggestion
+      where consumer's current position remains appropriate for their segment.
+
+  - id: SIT-INV-006
+    domain: RETAIL_INVESTMENTS
+    version: "2.0"
+    label: "Regular Saver Seeking Investment Upgrade"
+    description: >
+      Consumer has a regular cash savings habit (regular standing orders into
+      savings account) and has been doing so for ≥ 6 months, but has not
+      considered channelling any portion of regular saving into an investment.
+    financial_need_or_objective: >
+      Complement existing savings habit with a regular investment contribution
+      to benefit from long-term compounding and pound-cost averaging.
+    trigger_type: FIRM_INITIATIVE
+    regulatory_basis:
+      - "COBS 9B.3 — firm initiative; transactional evidence"
+    evidence_signals:
+      - type: TRANSACTIONAL
+        description: "Regular standing order to savings account for ≥ 6 months, amount ≥ £50/month"
+      - type: TRANSACTIONAL
+        description: "No corresponding regular payment into investment product"
+    delivery_channels: [digital_banking_app, online_platform, email_nudge]
+    linked_segments:   [SEG-INV-006]
+    linked_suggestion: SUG-INV-006
+    out_of_scope_flags: []
+
+  # ────────────────────────────────────────────────────────────────────────────
+  # DOMAIN: STRUCTURED DEPOSITS
+  # ────────────────────────────────────────────────────────────────────────────
+
+  - id: SIT-SD-001
+    domain: STRUCTURED_DEPOSITS
+    version: "2.0"
+    label: "Maturing Fixed-Rate Deposit — Reinvestment Direction"
+    description: >
+      Consumer holds a fixed-rate cash deposit or structured deposit that is
+      due to mature within 60 days.  Consumer has expressed no reinvestment
+      preference and risks automatic rollover into a potentially less favourable
+      rate or product.
+    financial_need_or_objective: >
+      Make an informed reinvestment decision at maturity — whether to continue
+      in cash, move to a structured deposit, or begin investing — rather than
+      defaulting to inertia rollover.
+    trigger_type: FIRM_INITIATIVE
+    regulatory_basis:
+      - "COBS 9B.3; PS25/22 Ch.3"
+      - "A&O Shearman Dec 2025 — structured deposits in scope"
+    evidence_signals:
+      - type: TEMPORAL
+        description: "Deposit maturity date within 60 days"
+      - type: TRANSACTIONAL
+        description: "No reinvestment instruction placed; no alternative product opened"
+    delivery_channels: [email_notification, digital_banking_app, branch, telephone]
+    linked_segments:   [SEG-SD-001]
+    linked_suggestion: SUG-SD-001
+    out_of_scope_flags: []
+
+  # ────────────────────────────────────────────────────────────────────────────
+  # DOMAIN: DC PENSION — ACCUMULATION
+  # ────────────────────────────────────────────────────────────────────────────
+
+  - id: SIT-PEN-001
+    domain: DC_PENSION_ACCUMULATION
+    version: "2.0"
+    label: "Under-saving for Retirement — Below Adequacy Benchmark"
+    description: >
+      Working-age DC pension member whose projected retirement income from
+      their current contribution rate is materially below a reasonable
+      adequacy benchmark (e.g. two-thirds of current salary at state pension
+      age), and who has not voluntarily increased contributions above the
+      auto-enrolment minimum.
+    financial_need_or_objective: >
+      Increase pension contribution rate to materially close the projected
+      retirement income gap, taking advantage of compounding and, where
+      applicable, employer matching.
+    trigger_type: FIRM_INITIATIVE
+    regulatory_basis:
+      - "PS25/22 para 1.2 — 12.5m under-saving (DWP 2023)"
+      - "COBS 9B.3; HMT soft opt-in secondary legislation Dec 2025"
+    evidence_signals:
+      - type: MODELLED
+        description: >
+          Segment-level projection model: projected retirement income < 67% of
+          current salary at state pension age using standardised assumptions
+      - type: TRANSACTIONAL
+        description: "Contribution rate at or below AE minimum (≤ 8% combined employee + employer)"
+      - type: DECLARED
+        description: "Consumer states pension is 'not enough' or asks about saving more"
+    delivery_channels:
+      [workplace_pension_portal, pension_provider_app, email_notification,
+       annual_statement_nudge, payroll_system_signal]
+    linked_segments:   [SEG-PEN-001]
+    linked_suggestion: SUG-PEN-001
+    direct_marketing_note: >
+      Workplace pension providers may proactively contact members using 'soft
+      opt-in' under HMT secondary legislation (Dec 2025 announcement).
+      All other firms must confirm PECR legal basis.
+    out_of_scope_flags:
+      - PENSION_CONSOLIDATION  # Must never be linked to consolidation suggestion
+
+  - id: SIT-PEN-002
+    domain: DC_PENSION_ACCUMULATION
+    version: "2.0"
+    label: "Default Fund Disengagement — Lifecycle Mismatch"
+    description: >
+      DC pension member invested 100% in the provider's default fund who has
+      made no active fund selection in the history of their membership, and
+      whose age-band suggests an actively selected risk-rated fund may be more
+      appropriate for their accumulation stage.
+    financial_need_or_objective: >
+      Move from passive default-fund inertia to an age-appropriate risk-rated
+      fund to align the investment strategy with the consumer's accumulation
+      horizon.
+    trigger_type: FIRM_INITIATIVE
+    regulatory_basis:
+      - "COBS 9B.3; PS25/22 Ch.3"
+      - "PROD — product governance for fund range"
+    evidence_signals:
+      - type: TRANSACTIONAL
+        description: "100% fund allocation in single default fund; no fund switch ever recorded"
+      - type: TEMPORAL
+        description: "Member age in a band where default may not be optimal (e.g. 25–35 growth gap)"
+      - type: BEHAVIOURAL
+        description: "Consumer viewed fund options pages but did not switch"
+    delivery_channels: [pension_provider_portal, annual_statement_nudge, member_portal, email]
+    linked_segments:   [SEG-PEN-002]
+    linked_suggestion: SUG-PEN-002
+    out_of_scope_flags:
+      - PENSION_CONSOLIDATION
+
+  - id: SIT-PEN-003
+    domain: DC_PENSION_ACCUMULATION
+    version: "2.0"
+    label: "Life Event — Contribution Review Opportunity"
+    description: >
+      Consumer has recently experienced a life event (salary increase, debt
+      clearance, mortgage end, marriage, new child, redundancy lump sum receipt)
+      that may create headroom or motivation to review pension contributions.
+    financial_need_or_objective: >
+      Reassess pension contribution rate in the context of changed financial
+      circumstances to improve long-term retirement adequacy.
+    trigger_type: FIRM_INITIATIVE
+    regulatory_basis:
+      - "COBS 9B.3 — firm initiative with transactional evidence"
+      - "PS25/22 para 3.14 — situations may respond to consumer lifecycle"
+    evidence_signals:
+      - type: LIFECYCLE_EVENT
+        description: "Salary increase ≥ 10% detected from payroll or direct deposit pattern"
+      - type: LIFECYCLE_EVENT
+        description: "Last mortgage/loan direct debit ceased (loan term ended)"
+      - type: TRANSACTIONAL
+        description: "Significant reduction in regular outgoings suggesting improved surplus"
+      - type: DECLARED
+        description: "Consumer declares a life change in a service interaction"
+    delivery_channels: [payroll_portal, banking_app_notification, pension_portal, email]
+    linked_segments:   [SEG-PEN-003]
+    linked_suggestion: SUG-PEN-003
+    out_of_scope_flags:
+      - PENSION_CONSOLIDATION
+
+  # ────────────────────────────────────────────────────────────────────────────
+  # DOMAIN: DC PENSION — DECUMULATION
+  # ────────────────────────────────────────────────────────────────────────────
+
+  - id: SIT-DEC-001
+    domain: DC_PENSION_DECUMULATION
+    version: "2.0"
+    label: "Approaching Retirement — No Decumulation Plan (45–65)"
+    description: >
+      DC pension holder aged 45–65 with no recorded retirement access plan,
+      no expression of preference for pension access method, and no engagement
+      with decumulation content or tools.  75% of DC holders 45+ fall into
+      this group (FLS 2024).
+    financial_need_or_objective: >
+      Begin structured planning for pension access — understand the main
+      decumulation pathways (drawdown, UFPLS, annuity direction) — so that
+      the consumer can make an informed decision before the decision becomes
+      urgent.
+    trigger_type: FIRM_INITIATIVE
+    regulatory_basis:
+      - "PS25/22 para 2.2 — 75% of DC holders 45+ lack clear plan (FLS 2024)"
+      - "COBS 9B.3; COBS 19 (Pension Wise signposting)"
+    evidence_signals:
+      - type: TRANSACTIONAL
+        description: "Active or deferred DC pot held; no access election on record"
+      - type: TEMPORAL
+        description: "Consumer age in 45–65 band (derived from date of birth on file)"
+      - type: BEHAVIOURAL
+        description: "No engagement with retirement planning tools or retirement content pages"
+    delivery_channels:
+      [pension_provider_portal, annual_statement, proactive_email,
+       workplace_pension_communications]
+    linked_segments:   [SEG-DEC-001]
+    linked_suggestion: SUG-DEC-001
+    mandatory_signpost: "Pension Wise (MoneyHelper) — COBS 19 obligation"
+    out_of_scope_flags:
+      - PENSION_CONSOLIDATION
+      - SPECIFIC_ANNUITY_PRODUCT
+
+  - id: SIT-DEC-002
+    domain: DC_PENSION_DECUMULATION
+    version: "2.0"
+    label: "Small Pot — Imminent Retirement Decision"
+    description: >
+      Consumer holds a small DC pot (£5,000–£30,000) and is within 5 years
+      of selected or state pension age with no access method nominated.
+      Consumer needs direction on the most accessible decumulation options
+      for a small fund.
+    financial_need_or_objective: >
+      Choose an appropriate access method (UFPLS or drawdown) for a small
+      DC pot at or near retirement, avoiding inertia default.
+    trigger_type: [CONSUMER_REQUEST, FIRM_INITIATIVE]
+    regulatory_basis:
+      - "COBS 9B.3; COBS 19"
+      - "PS25/22 Ch.3 small pot context"
+    evidence_signals:
+      - type: TRANSACTIONAL
+        description: "DC pot value £5,000–£30,000; no access nomination"
+      - type: TEMPORAL
+        description: "Within 5 years of stated retirement date or state pension age"
+      - type: DECLARED
+        description: "Consumer asks about 'taking my pension money'"
+    delivery_channels: [pension_portal, call_centre, annual_statement, email]
+    linked_segments:   [SEG-DEC-002]
+    linked_suggestion: SUG-DEC-002
+    mandatory_signpost: "Pension Wise (MoneyHelper) — COBS 19 obligation"
+    out_of_scope_flags:
+      - PENSION_CONSOLIDATION
+      - SPECIFIC_ANNUITY_PRODUCT
+
+  - id: SIT-DEC-003
+    domain: DC_PENSION_DECUMULATION
+    version: "2.0"
+    label: "Annuity Consideration — Guaranteed Income Exploration"
+    description: >
+      Consumer in or approaching retirement who wishes to explore whether an
+      annuity (guaranteed income for life or fixed term) is appropriate as
+      their access method, and wants direction to an annuity comparison service.
+    financial_need_or_objective: >
+      Understand whether an annuity is a suitable access route given desire
+      for income certainty, and be directed to appropriate comparison tools
+      and whole-of-market brokerage information.
+    trigger_type: CONSUMER_REQUEST
+    regulatory_basis:
+      - "PS25/22 paras 3.35–3.39 (revised annuity position)"
+      - "COBS 9B; COBS 19"
+    evidence_signals:
+      - type: DECLARED
+        description: "Consumer asks about annuities, guaranteed income, or 'secure income in retirement'"
+      - type: BEHAVIOURAL
+        description: "Consumer viewed annuity product pages"
+    delivery_channels: [pension_portal, call_centre, digital_platform, branch]
+    linked_segments:   [SEG-DEC-003]
+    linked_suggestion: SUG-DEC-003
+    mandatory_signpost: "MoneyHelper annuity comparison tool (mandatory per PS25/22 para 3.39)"
+    annuity_rules:
+      specific_annuity_recommendation: PROHIBITED
+      annuity_quotation: PROHIBITED
+      annuity_feature_suggestion: PERMITTED
+      moneyhelper_tool_referral: MANDATORY
+      whole_of_market_brokerage_referral: >
+        PERMITTED — after TS journey ends; must state journey has ended;
+        MoneyHelper tool must be directed to first; referral fee subject
+        to existing inducement rules; disclosure of referral fee required.
+      mandatory_break: >
+        NOT REQUIRED under final PS25/22 rules (revised from CP25/17 proposal).
+        MoneyHelper tool visit acts as soft break.
+      fixed_term_annuity_with_surrender: >
+        EXCLUDED from annuity-specific TS rules per PS25/22 final position —
+        treated as standard investment suggestion.
+    out_of_scope_flags:
+      - SPECIFIC_ANNUITY_PRODUCT
+
+  - id: SIT-DEC-004
+    domain: DC_PENSION_DECUMULATION
+    version: "2.0"
+    label: "Drawdown Review — Consumer Already in Drawdown"
+    description: >
+      Consumer is already in flexi-access drawdown and has not reviewed their
+      withdrawal rate or investment strategy within drawdown for ≥ 18 months,
+      and may benefit from a directional prompt on whether their drawdown
+      setup remains broadly appropriate.
+    financial_need_or_objective: >
+      Prompt re-engagement with drawdown strategy to ensure consumer is not
+      exhausting funds prematurely or holding excessive cash within drawdown.
+    trigger_type: FIRM_INITIATIVE
+    regulatory_basis:
+      - "COBS 9B.3; PROD; Consumer Duty PRIN 2A ongoing service obligation"
+      - "PS25/22 monitoring — one-off nature; no ongoing individual suitability"
+    evidence_signals:
+      - type: TEMPORAL
+        description: "No drawdown strategy change or review interaction in ≥ 18 months"
+      - type: TRANSACTIONAL
+        description: "High cash allocation within drawdown pot (> 20% in cash sub-account)"
+      - type: TRANSACTIONAL
+        description: "Withdrawal rate trending above sustainable benchmark for pot size"
+    delivery_channels: [pension_provider_portal, annual_drawdown_statement, email]
+    linked_segments:   [SEG-DEC-004]
+    linked_suggestion: SUG-DEC-004
+    notes: >
+      PS25/22 simplified monitoring rules confirm no ongoing individual
+      suitability obligation. Suggestion is a one-off re-engagement prompt,
+      not a periodic review service.
+    out_of_scope_flags:
+      - PENSION_CONSOLIDATION
+      - SPECIFIC_ANNUITY_PRODUCT

@@ -1,0 +1,1124 @@
+# ==============================================================================
+# FCA TARGETED SUPPORT — CONSUMER SEGMENTS  (v2 — Production Grade)
+# ==============================================================================
+# Regulation : PS25/22 (final rules confirmed FCA Board 26 Feb 2026)
+# Rulebook   : COBS 9B.4 — Pre-defined Consumer Segments
+# ------------------------------------------------------------------------------
+# DEFINITION:
+#   A consumer segment is a pre-defined group of consumers who share the same
+#   situation AND, where relevant, common characteristics.  Each segment MUST:
+#
+#   (a) SUFFICIENTLY GRANULAR — neither so broad that no suitable suggestion
+#       can be designed, nor so detailed that it constitutes a comprehensive
+#       individual assessment (see granularity rule).
+#
+#   (b) INCLUDE/EXCLUDE CHARACTERISTICS — every segment must have at least one
+#       including and at least one excluding characteristic.  When an excluding
+#       characteristic is pre-defined, the firm should consider whether to:
+#       (i)  create a new segment for those consumers, or
+#       (ii) identify alternative support for them.
+#       If neither, a clear documented rationale is required. (PS25/22 para 3.27)
+#
+#   (c) NOT APPROACH INDIVIDUAL PROFILING — firm must not design segments with
+#       a level of detail that a firm providing investment advice would
+#       associate with a comprehensive individual assessment. (COBS 9B.4 new rule)
+#
+#   (d) DATA MINIMISATION — UK GDPR Art. 5(1)(c) applies to all characteristic
+#       data used in segment design. (PS25/22 para 3.24)
+#
+#   (e) DATA ACCURACY — firm must verify that data used to align a consumer with
+#       a segment is accurate and up-to-date before alignment. If the firm
+#       suspects data may be inaccurate, it must verify with the consumer first.
+#       (PS25/22 paras 3.49–3.51; GDPR accuracy principle)
+#
+#   (f) ADDITIONAL INFORMATION OVERRIDE — firm must not deliver a suggestion if
+#       it is, or ought reasonably to be aware of, information indicating the
+#       suggestion may not be suitable for that consumer — including information
+#       held prior to the journey AND information volunteered during the journey.
+#       (PS25/22 paras 3.52–3.55; COBS 9B suitability override)
+#
+#   (g) RISK QUESTIONNAIRES — permitted in TS journeys if they use basic risk
+#       categories (e.g. 1–5 scale) and do not incorporate a level of detail
+#       a firm would associate with comprehensive individual risk profiling.
+#       A detailed psychometric risk questionnaire would breach the granularity
+#       ceiling. (PS25/22 para 3.27 risk questionnaire guidance box)
+#
+#   (h) ASSUMPTIONS — firms may use reasonable assumptions to LIMIT the number
+#       of characteristics needed to define a segment. Assumptions must NOT be
+#       material to the suitability of the suggestion. (PS25/22 para 3.28–3.29)
+#
+#   (i) SUITABILITY LEVEL — assessed at SEGMENT level, not individual level.
+#       COBS 9/9A does NOT apply. COBS 9B bespoke suitability applies.
+#       COBS 10/10A appropriateness does NOT apply.
+#       (PS25/22 para 3.8; A&O Shearman Dec 2025)
+# ==============================================================================
+
+schema_version: "2.0"
+
+# Global characteristic type taxonomy
+characteristic_types:
+  RANGE:          "Numeric range (min/max)"
+  BOOLEAN:        "True/false binary flag"
+  CATEGORICAL:    "One of a fixed set of values"
+  TEMPORAL:       "Time-based condition"
+  THRESHOLD:      "Above/below a single threshold"
+  MODEL_OUTPUT:   "Output of segment-level model or scoring rule"
+  EVENT_TRIGGER:  "Signal from a life or account event"
+  FLAG:           "Operational flag (vulnerability, debt, arrears)"
+
+segments:
+
+  # ────────────────────────────────────────────────────────────────────────────
+  # RETAIL INVESTMENT SEGMENTS
+  # ────────────────────────────────────────────────────────────────────────────
+
+  - id: SEG-INV-001
+    version: "2.0"
+    linked_situation: SIT-INV-001
+    label: "Cash-Heavy Non-Investor — Mass Retail Band"
+    description: >
+      Consumers who hold a significant level of investible cash with no
+      existing investment product, who have not acted to invest despite
+      the availability of a tax-efficient wrapper.
+
+    including_characteristics:
+      - id: IC-INV-001-01
+        label: "Cash savings balance"
+        type: RANGE
+        definition: "Cash savings account balance ≥ £10,000 and ≤ £100,000"
+        data_source: "Core banking / savings ledger"
+        data_minimisation_justification: >
+          Balance range necessary to determine investible capacity without
+          individual wealth profiling; amount determines suitability of
+          initial ISA contribution suggestion.
+
+      - id: IC-INV-001-02
+        label: "No existing investment product"
+        type: BOOLEAN
+        definition: "Consumer holds no Stocks and Shares ISA, GIA, or investment fund with this firm"
+        data_source: "Product holding registry"
+        data_minimisation_justification: "Confirms need — consumer has not already addressed situation"
+
+      - id: IC-INV-001-03
+        label: "Account tenure"
+        type: RANGE
+        definition: "Account held ≥ 12 months"
+        data_source: "Account opening date"
+        data_minimisation_justification: "Ensures data stability; persistent holding pattern confirmed"
+
+    excluding_characteristics:
+      - id: EC-INV-001-01
+        label: "High net worth threshold"
+        type: THRESHOLD
+        definition: "Total cash + investment assets with this firm > £100,000"
+        rationale: "Scale of assets may warrant full regulated advice"
+        alternative_support:
+          type: SIGNPOST
+          destination: "MoneyHelper — finding a financial adviser"
+          action: "Signpost to regulated adviser and MoneyHelper website"
+
+      - id: EC-INV-001-02
+        label: "Active vulnerability indicator"
+        type: FLAG
+        definition: "Any active vulnerability flag on the consumer's record (bereavement, PoA, financial difficulty, health)"
+        rationale: "Standard segment route not appropriate without enhanced care"
+        alternative_support:
+          type: SPECIALIST_JOURNEY
+          destination: "Firm's vulnerable customer team; MoneyHelper"
+          action: "Route to specialist support with enhanced care obligations"
+
+      - id: EC-INV-001-03
+        label: "Recent regulated advice"
+        type: TEMPORAL
+        definition: "Consumer has received regulated financial advice in past 12 months (declared or evidenced)"
+        rationale: "Consumer already has access to personalised support"
+        alternative_support:
+          type: NONE_REQUIRED
+          rationale_documented: true
+
+      - id: EC-INV-001-04
+        label: "Active high-cost debt"
+        type: FLAG
+        definition: "Active overdraft > £1,000 or high-cost short-term credit product active"
+        rationale: "Investing before clearing high-cost debt may not be suitable"
+        alternative_support:
+          type: SIGNPOST
+          destination: "MoneyHelper debt guidance"
+          action: "Direct to MoneyHelper before re-assessing for investment TS"
+
+    assumptions_used:
+      - id: ASM-INV-001-01
+        assumption: "Consumer has basic willingness to consider market-based risk"
+        materiality: LOW
+        justification: >
+          Suggestion involves diversified multi-asset fund, not concentrated or
+          leveraged. Broad risk category is not material to this level of suggestion.
+          Risk is not being assessed comprehensively — the suggestion is directional.
+        disclosure_to_consumer: OPTIONAL
+        if_consumer_disputes_assumption: "Override segment match; exit TS; signpost MoneyHelper"
+
+    risk_questionnaire_permitted: true
+    risk_questionnaire_constraint: >
+      Basic 3–5 category risk scale only. Must not incorporate detailed income,
+      expenditure, time-horizon, and attitude-to-loss combination that would
+      constitute a comprehensive individual risk profile.
+
+    data_accuracy_verification:
+      method: "Real-time check against current balance data at time of journey entry"
+      stale_data_threshold: "Data older than 30 days must be refreshed"
+      consumer_confirmation: >
+        If firm suspects data may be outdated, must present key data points
+        to consumer for confirmation before proceeding to alignment. (PS25/22 para 3.51)
+
+    suitability_basis: >
+      COBS 9B — segment-level assessment. Consumer correctly aligned with
+      segment where all including characteristics verified and no excluding
+      characteristics apply. Individual COBS 9/9A suitability does NOT apply.
+
+    granularity_assessment:
+      verdict: SUFFICIENT
+      rationale: >
+        Three independent including characteristics (balance range, product
+        holding, tenure) create a well-defined group without approaching
+        comprehensive individual profiling. Avoids single-attribute broadness.
+      ai_agent_check: >
+        Reject if agent attempts to add >4 additional numeric characteristics
+        to this segment in real-time — that would breach granularity ceiling.
+
+    gdpr_lawful_basis: "Legitimate interests — GDPR Art. 6(1)(f); DPA 2018; data minimisation applied"
+    segment_review_cadence: "Minimum: annually or on significant product or regulatory change"
+    linked_suggestion: SUG-INV-001
+
+  # --------------------------------------------------------------------------
+
+  - id: SEG-INV-002
+    version: "2.0"
+    linked_situation: SIT-INV-002
+    label: "First-Time Investor — Young Working Adult"
+    description: >
+      Young working-age consumers who have never held an investment product,
+      have declared or exhibited a knowledge barrier, and have modest savings.
+
+    including_characteristics:
+      - id: IC-INV-002-01
+        label: "Age band"
+        type: RANGE
+        definition: "Age 18–40"
+        data_source: "Date of birth on record"
+
+      - id: IC-INV-002-02
+        label: "Employment status"
+        type: CATEGORICAL
+        definition: "Employed or self-employed (regular income credit pattern)"
+        data_source: "Account credit pattern; declared employment status"
+
+      - id: IC-INV-002-03
+        label: "No prior investment product"
+        type: BOOLEAN
+        definition: "Never held S&S ISA, GIA, or investment fund with this firm"
+        data_source: "Product holding registry; prior account history"
+
+      - id: IC-INV-002-04
+        label: "Modest cash savings"
+        type: RANGE
+        definition: "Cash savings balance £500–£25,000"
+        data_source: "Core banking ledger"
+
+    excluding_characteristics:
+      - id: EC-INV-002-01
+        label: "Active high-cost debt"
+        type: FLAG
+        definition: "Active payday loan, overdraft > £500, or BNPL arrears"
+        rationale: "Investing before clearing high-cost debt likely unsuitable"
+        alternative_support:
+          type: SIGNPOST
+          destination: "MoneyHelper debt guidance"
+          action: "Signpost to debt guidance before re-entering TS"
+
+      - id: EC-INV-002-02
+        label: "Active vulnerability flag"
+        type: FLAG
+        definition: "Any active vulnerability marker on account"
+        rationale: "Standard journey not appropriate"
+        alternative_support:
+          type: SPECIALIST_JOURNEY
+          destination: "Vulnerable customer team"
+
+    assumptions_used:
+      - id: ASM-INV-002-01
+        assumption: "Consumer has a long accumulation horizon (10+ years) consistent with age band"
+        materiality: LOW
+        justification: "Age 18–40 implies long horizon; fund suggestion is diversified starter fund"
+        disclosure_to_consumer: RECOMMENDED
+
+    risk_questionnaire_permitted: true
+    risk_questionnaire_constraint: >
+      Simple 3-option risk appetite selector (cautious / balanced / growth).
+      Must not combine with income, tax, and loss scenarios simultaneously.
+
+    data_accuracy_verification:
+      method: "Real-time product registry check at journey initiation"
+      consumer_confirmation: >
+        Present employment status for consumer confirmation if derived
+        from indirect signals rather than declared data.
+
+    granularity_assessment:
+      verdict: SUFFICIENT
+      rationale: >
+        Age, employment, savings band, and prior investment history together
+        produce a meaningful sub-group without individual circumstance profiling.
+
+    segment_review_cadence: "Annually"
+    linked_suggestion: SUG-INV-002
+
+  # --------------------------------------------------------------------------
+
+  - id: SEG-INV-003
+    version: "2.0"
+    linked_situation: SIT-INV-003
+    label: "ISA Allowance Non-Utiliser — Tax Year End Window"
+
+    including_characteristics:
+      - id: IC-INV-003-01
+        label: "No S&S ISA subscription this tax year"
+        type: BOOLEAN
+        definition: "Zero Stocks and Shares ISA contributions in current tax year"
+        data_source: "ISA subscription ledger"
+
+      - id: IC-INV-003-02
+        label: "Actionable cash balance"
+        type: THRESHOLD
+        definition: "Cash savings ≥ £500 available for potential ISA contribution"
+        data_source: "Savings / current account balance"
+
+      - id: IC-INV-003-03
+        label: "Tax year proximity"
+        type: TEMPORAL
+        definition: "Journey date is between 6 January and 5 April (final 90 days of UK tax year)"
+        data_source: "System date"
+
+    excluding_characteristics:
+      - id: EC-INV-003-01
+        label: "Annual ISA limit already reached"
+        type: BOOLEAN
+        definition: "Consumer has already subscribed to the full annual ISA allowance"
+        rationale: "Suggestion has no effect"
+        alternative_support:
+          type: NONE_REQUIRED
+          rationale_documented: true
+
+      - id: EC-INV-003-02
+        label: "Active vulnerability flag"
+        type: FLAG
+        definition: "Active vulnerability marker"
+        rationale: "Standard journey not appropriate"
+        alternative_support:
+          type: SPECIALIST_JOURNEY
+          destination: "Vulnerable customer team"
+
+    assumptions_used: []
+    risk_questionnaire_permitted: true
+    risk_questionnaire_constraint: "Basic 3-category selector"
+
+    data_accuracy_verification:
+      method: "Real-time ISA subscription balance check and tax year date validation"
+
+    granularity_assessment:
+      verdict: SUFFICIENT
+      rationale: "Time-bounded, subscription-based, balance-confirmed — tight non-individualised group"
+
+    segment_review_cadence: "Each tax year"
+    linked_suggestion: SUG-INV-003
+
+  # --------------------------------------------------------------------------
+
+  - id: SEG-INV-004
+    version: "2.0"
+    linked_situation: SIT-INV-004
+    label: "Mid-Range Lump Sum Recipient — No Investment Plan"
+
+    including_characteristics:
+      - id: IC-INV-004-01
+        label: "Lump sum signal"
+        type: EVENT_TRIGGER
+        definition: >
+          Atypical credit of £5,000–£75,000 to account inconsistent with
+          regular income, OR consumer-declared lump sum receipt during journey
+        data_source: "Transaction pattern analysis; consumer declaration"
+
+      - id: IC-INV-004-02
+        label: "No existing investment instruction"
+        type: BOOLEAN
+        definition: "No investment instruction placed for the credited funds"
+        data_source: "Product opening and transaction ledger"
+
+    excluding_characteristics:
+      - id: EC-INV-004-01
+        label: "Amount above advice threshold"
+        type: THRESHOLD
+        definition: "Declared or identified lump sum > £75,000"
+        rationale: "Scale warrants full regulated advice"
+        alternative_support:
+          type: SIGNPOST
+          destination: "Regulated financial adviser; MoneyHelper"
+          action: "Exit TS; provide signpost before journey ends"
+
+      - id: EC-INV-004-02
+        label: "Active debt or arrears"
+        type: FLAG
+        definition: "Active mortgage arrears, debt management plan, or County Court Judgement"
+        rationale: "Lump sum may be better applied to debt clearance"
+        alternative_support:
+          type: SIGNPOST
+          destination: "MoneyHelper debt guidance; StepChange"
+
+      - id: EC-INV-004-03
+        label: "Active vulnerability flag"
+        type: FLAG
+        definition: "Active vulnerability marker"
+        alternative_support:
+          type: SPECIALIST_JOURNEY
+          destination: "Vulnerable customer team"
+
+    assumptions_used:
+      - id: ASM-INV-004-01
+        assumption: "Lump sum is not earmarked for an imminent known expenditure"
+        materiality: MEDIUM
+        justification: >
+          Firm must surface this in the journey — a clear 'any planned large
+          spend within 12 months?' question should be included. If consumer
+          confirms imminent expenditure, exit segment match.
+        disclosure_to_consumer: MANDATORY
+        consumer_check_required: true
+
+    risk_questionnaire_permitted: true
+    risk_questionnaire_constraint: "3–5 category selector; no comprehensive income + tax + time scenario battery"
+
+    data_accuracy_verification:
+      method: >
+        Transaction pattern check at initiation; consumer confirmation of
+        lump sum amount and origin (declared or confirmed) before alignment
+      consumer_confirmation: REQUIRED_FOR_AMOUNT
+
+    granularity_assessment:
+      verdict: SUFFICIENT
+      rationale: "Event-triggered, range-bounded, assumption surface point — non-individualised"
+
+    segment_review_cadence: "Semi-annually; review escalation threshold as advice boundary evolves"
+    linked_suggestion: SUG-INV-004
+
+  # --------------------------------------------------------------------------
+
+  - id: SEG-INV-005
+    version: "2.0"
+    linked_situation: SIT-INV-005
+    label: "Dormant Investment Account Holder"
+
+    including_characteristics:
+      - id: IC-INV-005-01
+        label: "Inactive account"
+        type: TEMPORAL
+        definition: "No transaction, contribution, or login activity on investment account for ≥ 12 months"
+        data_source: "Account activity log"
+
+      - id: IC-INV-005-02
+        label: "Investment product held"
+        type: BOOLEAN
+        definition: "Active S&S ISA, GIA, or investment fund account with positive balance"
+        data_source: "Product holding registry"
+
+    excluding_characteristics:
+      - id: EC-INV-005-01
+        label: "Consumer has recently engaged"
+        type: TEMPORAL
+        definition: "Consumer logged in or made a transaction in past 90 days"
+        rationale: "Not dormant; situation does not apply"
+        alternative_support:
+          type: NONE_REQUIRED
+
+      - id: EC-INV-005-02
+        label: "Active vulnerability flag"
+        type: FLAG
+        definition: "Active vulnerability marker"
+        alternative_support:
+          type: SPECIALIST_JOURNEY
+          destination: "Vulnerable customer team"
+
+    assumptions_used:
+      - id: ASM-INV-005-01
+        assumption: "Inactivity reflects disengagement rather than a deliberate long-term strategy"
+        materiality: LOW
+        justification: >
+          'Do nothing' is a valid suggestion outcome — consumer may confirm
+          current position remains appropriate. Assumption is not material as
+          the suggestion encompasses both re-engagement and 'do nothing'.
+        disclosure_to_consumer: OPTIONAL
+
+    risk_questionnaire_permitted: false
+    notes: >
+      Suggestion may validly be 'your current investment appears broadly
+      appropriate; no action required.' PS25/22 para 3.30 explicitly permits
+      a ready-made suggestion of not taking an action.
+
+    data_accuracy_verification:
+      method: "Last-activity timestamp check at journey initiation"
+
+    granularity_assessment:
+      verdict: SUFFICIENT
+      rationale: "Inactivity period + active holding — simple binary criteria; not individualised"
+
+    segment_review_cadence: "Annually"
+    linked_suggestion: SUG-INV-005
+
+  # --------------------------------------------------------------------------
+
+  - id: SEG-INV-006
+    version: "2.0"
+    linked_situation: SIT-INV-006
+    label: "Regular Cash Saver — No Investment Counterpart"
+
+    including_characteristics:
+      - id: IC-INV-006-01
+        label: "Regular savings standing order"
+        type: TEMPORAL
+        definition: "Regular credit to savings account ≥ £50/month for ≥ 6 consecutive months"
+        data_source: "Standing order / direct credit pattern"
+
+      - id: IC-INV-006-02
+        label: "No investment product"
+        type: BOOLEAN
+        definition: "No S&S ISA or investment fund held with this firm"
+        data_source: "Product holding registry"
+
+    excluding_characteristics:
+      - id: EC-INV-006-01
+        label: "Active high-cost debt"
+        type: FLAG
+        definition: "Active high-cost credit"
+        rationale: "Regular investment may not be suitable alongside high-cost debt"
+        alternative_support:
+          type: SIGNPOST
+          destination: "MoneyHelper debt guidance"
+
+      - id: EC-INV-006-02
+        label: "Active vulnerability flag"
+        type: FLAG
+        definition: "Active vulnerability marker"
+        alternative_support:
+          type: SPECIALIST_JOURNEY
+          destination: "Vulnerable customer team"
+
+    assumptions_used:
+      - id: ASM-INV-006-01
+        assumption: "Consumer has financial surplus supporting continued regular contribution"
+        materiality: LOW
+        justification: >
+          6-month payment history evidences sustained ability. Assumption is
+          low-materiality as suggestion is for a modest regular contribution.
+
+    risk_questionnaire_permitted: true
+    risk_questionnaire_constraint: "3-category selector"
+
+    data_accuracy_verification:
+      method: "Standing order pattern check at initiation; consumer confirmation of amount"
+
+    granularity_assessment:
+      verdict: SUFFICIENT
+      rationale: "Behavioural pattern + product absence — objectively verifiable, not individualised"
+
+    segment_review_cadence: "Annually"
+    linked_suggestion: SUG-INV-006
+
+  # ────────────────────────────────────────────────────────────────────────────
+  # STRUCTURED DEPOSIT SEGMENT
+  # ────────────────────────────────────────────────────────────────────────────
+
+  - id: SEG-SD-001
+    version: "2.0"
+    linked_situation: SIT-SD-001
+    label: "Maturing Deposit Holder — No Reinvestment Plan"
+
+    including_characteristics:
+      - id: IC-SD-001-01
+        label: "Maturing deposit"
+        type: TEMPORAL
+        definition: "Fixed-rate deposit or structured deposit maturing within 60 days"
+        data_source: "Deposit maturity schedule"
+
+      - id: IC-SD-001-02
+        label: "No reinvestment instruction"
+        type: BOOLEAN
+        definition: "No new product opened or instruction placed for maturing funds"
+        data_source: "Product opening ledger"
+
+    excluding_characteristics:
+      - id: EC-SD-001-01
+        label: "Amount above advice threshold"
+        type: THRESHOLD
+        definition: "Maturing deposit > £100,000"
+        rationale: "Scale may warrant regulated advice"
+        alternative_support:
+          type: SIGNPOST
+          destination: "MoneyHelper; regulated financial adviser"
+
+      - id: EC-SD-001-02
+        label: "Active vulnerability flag"
+        type: FLAG
+        definition: "Active vulnerability marker"
+        alternative_support:
+          type: SPECIALIST_JOURNEY
+
+    assumptions_used: []
+    risk_questionnaire_permitted: true
+    risk_questionnaire_constraint: "3-category selector if investment suggestion is included"
+
+    data_accuracy_verification:
+      method: "Maturity date confirmed from deposit contract; balance confirmed at time of journey"
+
+    granularity_assessment:
+      verdict: SUFFICIENT
+      rationale: "Maturity event + no instruction — event-driven, non-individualised"
+
+    segment_review_cadence: "Annually"
+    linked_suggestion: SUG-SD-001
+
+  # ────────────────────────────────────────────────────────────────────────────
+  # DC PENSION ACCUMULATION SEGMENTS
+  # ────────────────────────────────────────────────────────────────────────────
+
+  - id: SEG-PEN-001
+    version: "2.0"
+    linked_situation: SIT-PEN-001
+    label: "Under-Saving DC Member — Working Age with Projected Shortfall"
+
+    including_characteristics:
+      - id: IC-PEN-001-01
+        label: "Age band"
+        type: RANGE
+        definition: "Age 25–57"
+        data_source: "Date of birth"
+
+      - id: IC-PEN-001-02
+        label: "Contribution rate at/below AE minimum"
+        type: THRESHOLD
+        definition: "Combined employee + employer contribution ≤ 8%"
+        data_source: "Pension contribution records"
+
+      - id: IC-PEN-001-03
+        label: "Projected income below adequacy benchmark"
+        type: MODEL_OUTPUT
+        definition: >
+          Segment-level projection model (standardised assumptions) indicates
+          projected annual retirement income < 67% of current estimated salary
+          at state pension age
+        data_source: "Pension administration system; salary data (where available)"
+        model_note: >
+          Projection is AT SEGMENT LEVEL using standardised assumptions — not
+          an individualised financial plan. Must not be presented as a
+          personalised retirement forecast.
+
+      - id: IC-PEN-001-04
+        label: "Active DC scheme member"
+        type: BOOLEAN
+        definition: "Active member of the firm's DC scheme or platform"
+        data_source: "Pension scheme membership data"
+
+    excluding_characteristics:
+      - id: EC-PEN-001-01
+        label: "Within 5 years of retirement"
+        type: TEMPORAL
+        definition: "Within 5 years of stated or estimated state pension age"
+        rationale: "Accumulation suggestion less relevant; decumulation situation more appropriate"
+        alternative_support:
+          type: SEGMENT_REDIRECT
+          destination: "SEG-DEC-001 or SEG-DEC-002 depending on pot size"
+
+      - id: EC-PEN-001-02
+        label: "Financial hardship or difficulty flag"
+        type: FLAG
+        definition: "Active financial difficulty marker, debt management plan, or payment deferral"
+        rationale: "Increasing contributions may not be suitable under financial stress"
+        alternative_support:
+          type: SIGNPOST
+          destination: "MoneyHelper debt and money guidance; employer EAP if available"
+
+      - id: EC-PEN-001-03
+        label: "Active vulnerability flag"
+        type: FLAG
+        definition: "Active vulnerability marker"
+        alternative_support:
+          type: SPECIALIST_JOURNEY
+          destination: "Vulnerable customer team"
+
+    assumptions_used:
+      - id: ASM-PEN-001-01
+        assumption: "Consumer has no material separate retirement savings materially affecting the shortfall"
+        materiality: MEDIUM
+        justification: >
+          Firm does not have visibility of all external pension pots.  Suggestion
+          must surface a question: 'Do you have other pension savings elsewhere?'
+          If consumer confirms other material savings, the projection gap may not
+          apply — override segment alignment if gap is thereby closed.
+        disclosure_to_consumer: MANDATORY
+        consumer_check_required: true
+
+    risk_questionnaire_permitted: false
+    notes: >
+      No risk questionnaire required — suggestion is contribution rate increase
+      within the same existing scheme and fund; no product change.
+
+    data_accuracy_verification:
+      method: >
+        Contribution rate confirmed from scheme admin records at initiation.
+        Salary data accuracy check (if used in projection model) — present to
+        consumer for confirmation if derived indirectly.
+      consumer_confirmation: REQUIRED_FOR_SALARY_IF_INDIRECT
+
+    granularity_assessment:
+      verdict: SUFFICIENT
+      rationale: >
+        Age band, contribution threshold, model-output projection, and active
+        membership combine to produce a meaningful sub-group. Projection is
+        at segment level — not a personal financial plan.
+
+    segment_review_cadence: "Annually; and on change to AE minimum rates or State Pension Age"
+    linked_suggestion: SUG-PEN-001
+
+  # --------------------------------------------------------------------------
+
+  - id: SEG-PEN-002
+    version: "2.0"
+    linked_situation: SIT-PEN-002
+    label: "Default Fund Disengaged DC Member — Age-Lifecycle Mismatch"
+
+    including_characteristics:
+      - id: IC-PEN-002-01
+        label: "100% default fund allocation"
+        type: BOOLEAN
+        definition: "Entire pension pot invested in firm's single default fund"
+        data_source: "Fund allocation registry"
+
+      - id: IC-PEN-002-02
+        label: "No active fund selection history"
+        type: BOOLEAN
+        definition: "No fund switch or active election recorded in full membership history"
+        data_source: "Transaction and instruction history"
+
+      - id: IC-PEN-002-03
+        label: "Age band"
+        type: CATEGORICAL
+        definition: >
+          One of three predefined lifecycle bands:
+            GROWTH:       25–35 years
+            ACCUMULATION: 36–50 years
+            PRE_RETIREMENT: 51–60 years
+        data_source: "Date of birth"
+        note: >
+          Age band determines which risk-rated fund family is included in the
+          ready-made suggestion — creating three sub-segments within this segment.
+
+    excluding_characteristics:
+      - id: EC-PEN-002-01
+        label: "Recent active engagement"
+        type: TEMPORAL
+        definition: "Active fund switch, fund review, or investment choice interaction within 24 months"
+        rationale: "Consumer recently engaged; suggestion not appropriate at this time"
+        alternative_support:
+          type: NONE_REQUIRED
+          rationale_documented: true
+
+      - id: EC-PEN-002-02
+        label: "Active vulnerability flag"
+        type: FLAG
+        definition: "Active vulnerability marker"
+        alternative_support:
+          type: SPECIALIST_JOURNEY
+
+    assumptions_used:
+      - id: ASM-PEN-002-01
+        assumption: "Consumer has no material external investment portfolio that would affect appropriate risk level"
+        materiality: LOW
+        justification: >
+          Suggestion is from broad risk-band fund families, not a precise
+          risk allocation. Assumption is not material at this level of
+          directional fund switch.
+        disclosure_to_consumer: OPTIONAL
+
+    risk_questionnaire_permitted: true
+    risk_questionnaire_constraint: >
+      Simple 3-category band used to confirm which lifecycle sub-band applies.
+      Must not incorporate comprehensive risk profiling battery.
+
+    data_accuracy_verification:
+      method: "Fund allocation data confirmed at journey initiation from live pension record"
+
+    granularity_assessment:
+      verdict: SUFFICIENT
+      rationale: >
+        Three independent criteria (fund type, choice history, age band)
+        produce three clearly defined lifecycle sub-groups. Age band creates
+        sub-segmentation which is defensible and not individualised.
+
+    segment_review_cadence: "Annually; and on fund range changes"
+    linked_suggestion: SUG-PEN-002
+
+  # --------------------------------------------------------------------------
+
+  - id: SEG-PEN-003
+    version: "2.0"
+    linked_situation: SIT-PEN-003
+    label: "Life-Event Triggered Contribution Review Candidate"
+
+    including_characteristics:
+      - id: IC-PEN-003-01
+        label: "Life event signal"
+        type: EVENT_TRIGGER
+        definition: >
+          At least one of:
+            (i)   Salary increase ≥ 10% detected in payroll or account credits
+            (ii)  Regular loan/mortgage payment ceased (≥ £200/month released)
+            (iii) Consumer declares life event in service interaction
+        data_source: "Payroll / transaction pattern; CRM interaction notes"
+
+      - id: IC-PEN-003-02
+        label: "Contribution rate below voluntary threshold"
+        type: THRESHOLD
+        definition: "Combined contribution rate < 12%"
+        data_source: "Pension contribution records"
+
+      - id: IC-PEN-003-03
+        label: "Active DC member"
+        type: BOOLEAN
+        definition: "Active member of firm's DC scheme"
+        data_source: "Scheme membership data"
+
+    excluding_characteristics:
+      - id: EC-PEN-003-01
+        label: "Financial hardship flag"
+        type: FLAG
+        definition: "Active financial difficulty marker"
+        alternative_support:
+          type: SIGNPOST
+          destination: "MoneyHelper money guidance"
+
+      - id: EC-PEN-003-02
+        label: "Active vulnerability flag"
+        type: FLAG
+        definition: "Active vulnerability marker"
+        alternative_support:
+          type: SPECIALIST_JOURNEY
+
+      - id: EC-PEN-003-03
+        label: "Within 5 years of retirement"
+        type: TEMPORAL
+        definition: "Within 5 years of state pension age"
+        rationale: "Accumulation suggestion less relevant; redirect to decumulation"
+        alternative_support:
+          type: SEGMENT_REDIRECT
+          destination: "SEG-DEC-001"
+
+    assumptions_used:
+      - id: ASM-PEN-003-01
+        assumption: "Life event signal reflects a genuine sustained improvement in financial position"
+        materiality: MEDIUM
+        justification: >
+          Signal is objective (payroll data, standing order cessation) rather
+          than subjective. A consumer check question should confirm improvement
+          is sustained before suggestion is delivered.
+        disclosure_to_consumer: MANDATORY
+        consumer_check_required: true
+
+    risk_questionnaire_permitted: false
+
+    data_accuracy_verification:
+      method: >
+        Salary / transaction data verified against current month credits.
+        Consumer confirmation of life event signal required before segment
+        alignment is finalised.
+
+    granularity_assessment:
+      verdict: SUFFICIENT
+      rationale: "Event-triggered with objective transactional corroboration; not individualised"
+
+    segment_review_cadence: "Annually"
+    linked_suggestion: SUG-PEN-003
+
+  # ────────────────────────────────────────────────────────────────────────────
+  # DC PENSION DECUMULATION SEGMENTS
+  # ────────────────────────────────────────────────────────────────────────────
+
+  - id: SEG-DEC-001
+    version: "2.0"
+    linked_situation: SIT-DEC-001
+    label: "Pre-Retirement Non-Planner — 45 to 65"
+
+    including_characteristics:
+      - id: IC-DEC-001-01
+        label: "Age band"
+        type: RANGE
+        definition: "Age 45–65"
+        data_source: "Date of birth"
+
+      - id: IC-DEC-001-02
+        label: "DC pension held"
+        type: BOOLEAN
+        definition: "Active or deferred DC pension with firm"
+        data_source: "Pension scheme registry"
+
+      - id: IC-DEC-001-03
+        label: "No retirement access plan"
+        type: BOOLEAN
+        definition: "No retirement access election, expression of preference, or drawdown initiation on record"
+        data_source: "Scheme administration system; CRM records"
+
+    excluding_characteristics:
+      - id: EC-DEC-001-01
+        label: "Already in drawdown or annuity"
+        type: BOOLEAN
+        definition: "Consumer has already commenced pension access in any form"
+        rationale: "Access decision already made; situation does not apply"
+        alternative_support:
+          type: NONE_REQUIRED
+          rationale_documented: true
+
+      - id: EC-DEC-001-02
+        label: "DB transfer in progress or applicable"
+        type: FLAG
+        definition: >
+          Consumer has a defined benefit pension transfer under consideration,
+          or QROPS, or safeguarded benefits requiring specialist advice
+        rationale: "Mandatory specialist advice regime applies (COBS 9/9A); TS not appropriate"
+        alternative_support:
+          type: MANDATORY_REFERRAL
+          destination: "Regulated pension transfer specialist; Pension Wise"
+
+      - id: EC-DEC-001-03
+        label: "Active vulnerability flag"
+        type: FLAG
+        definition: "Active vulnerability marker"
+        alternative_support:
+          type: SPECIALIST_JOURNEY
+          destination: "Vulnerable customer team; Pension Wise referral"
+
+    assumptions_used:
+      - id: ASM-DEC-001-01
+        assumption: "Consumer is not planning to work beyond age 67 as primary income strategy"
+        materiality: LOW
+        justification: >
+          Suggestion is directional (explore pathways) rather than a finalised
+          access structure. Consumer retains all decisions. Low materiality.
+        disclosure_to_consumer: OPTIONAL
+
+    risk_questionnaire_permitted: false
+
+    data_accuracy_verification:
+      method: >
+        Age confirmed from DoB; access plan status confirmed from live admin
+        records. Consumer presented with 'have you already begun accessing
+        any pension?' check at journey start.
+
+    granularity_assessment:
+      verdict: SUFFICIENT
+      rationale: >
+        Three objective criteria (age band, product holding, plan status)
+        define a large but well-bounded group. No psychographic data used.
+
+    segment_review_cadence: "Annually; and on State Pension Age legislative changes"
+    linked_suggestion: SUG-DEC-001
+
+  # --------------------------------------------------------------------------
+
+  - id: SEG-DEC-002
+    version: "2.0"
+    linked_situation: SIT-DEC-002
+    label: "Small Pot Holder — Imminent Retirement, No Access Plan"
+
+    including_characteristics:
+      - id: IC-DEC-002-01
+        label: "Time to retirement"
+        type: RANGE
+        definition: "Within 5 years of stated retirement age or state pension age"
+        data_source: "Date of birth; declared retirement age"
+
+      - id: IC-DEC-002-02
+        label: "DC pot value"
+        type: RANGE
+        definition: "DC pot value £5,000–£30,000"
+        data_source: "Pension fund valuation"
+
+      - id: IC-DEC-002-03
+        label: "No access nomination"
+        type: BOOLEAN
+        definition: "No retirement access method nominated on record"
+        data_source: "Scheme administration system"
+
+    excluding_characteristics:
+      - id: EC-DEC-002-01
+        label: "Trivial commutation range"
+        type: THRESHOLD
+        definition: "DC pot value < £2,000 (trivial commutation rules may apply)"
+        rationale: "Different guidance and regulatory rules apply to very small pots"
+        alternative_support:
+          type: SIGNPOST
+          destination: "MoneyHelper small pots and trivial commutation guidance"
+
+      - id: EC-DEC-002-02
+        label: "Above segment ceiling"
+        type: THRESHOLD
+        definition: "Pot value > £30,000"
+        rationale: "Material financial decision; may require more comprehensive support"
+        alternative_support:
+          type: SIGNPOST
+          destination: "Pension Wise full guidance appointment; SEG-DEC-001"
+
+      - id: EC-DEC-002-03
+        label: "Active vulnerability flag"
+        type: FLAG
+        definition: "Active vulnerability marker"
+        alternative_support:
+          type: SPECIALIST_JOURNEY
+          destination: "Vulnerable customer team; Pension Wise"
+
+    assumptions_used: []
+
+    risk_questionnaire_permitted: false
+
+    data_accuracy_verification:
+      method: >
+        Pot value confirmed from live fund valuation at journey initiation.
+        State pension age confirmed; consumer asked to confirm intended
+        retirement age if not on record.
+
+    granularity_assessment:
+      verdict: SUFFICIENT
+      rationale: "Three objective criteria: time horizon, pot value range, plan status"
+
+    segment_review_cadence: "Annually"
+    linked_suggestion: SUG-DEC-002
+
+  # --------------------------------------------------------------------------
+
+  - id: SEG-DEC-003
+    version: "2.0"
+    linked_situation: SIT-DEC-003
+    label: "Annuity Enquirer — Retirement Stage"
+
+    including_characteristics:
+      - id: IC-DEC-003-01
+        label: "Expressed annuity interest"
+        type: BOOLEAN
+        definition: "Consumer has explicitly asked about annuities, guaranteed income, or income for life"
+        data_source: "Journey declaration or CRM interaction"
+
+      - id: IC-DEC-003-02
+        label: "DC pension held"
+        type: BOOLEAN
+        definition: "Active or deferred DC pension with firm"
+        data_source: "Pension registry"
+
+      - id: IC-DEC-003-03
+        label: "Age in or approaching retirement"
+        type: RANGE
+        definition: "Age ≥ 50"
+        data_source: "Date of birth"
+
+    excluding_characteristics:
+      - id: EC-DEC-003-01
+        label: "DB safeguarded benefits"
+        type: FLAG
+        definition: "Consumer has safeguarded benefits requiring independent advice (e.g. GMP)"
+        rationale: "Specialist regulated advice mandatory"
+        alternative_support:
+          type: MANDATORY_REFERRAL
+          destination: "Regulated pension transfer specialist"
+
+      - id: EC-DEC-003-02
+        label: "Active vulnerability flag"
+        type: FLAG
+        definition: "Active vulnerability marker"
+        alternative_support:
+          type: SPECIALIST_JOURNEY
+          destination: "Vulnerable customer team"
+
+    assumptions_used: []
+    risk_questionnaire_permitted: false
+
+    data_accuracy_verification:
+      method: "Consumer declaration of annuity interest confirmed in journey entry"
+
+    granularity_assessment:
+      verdict: SUFFICIENT
+      rationale: "Declared interest + product holding + age — request-based, consumer-initiated"
+
+    segment_review_cadence: "Annually"
+    linked_suggestion: SUG-DEC-003
+
+  # --------------------------------------------------------------------------
+
+  - id: SEG-DEC-004
+    version: "2.0"
+    linked_situation: SIT-DEC-004
+    label: "Existing Drawdown Member — Lapsed Engagement"
+
+    including_characteristics:
+      - id: IC-DEC-004-01
+        label: "In drawdown"
+        type: BOOLEAN
+        definition: "Consumer is in active flexi-access drawdown with this firm"
+        data_source: "Pension access status"
+
+      - id: IC-DEC-004-02
+        label: "No strategy review"
+        type: TEMPORAL
+        definition: "No drawdown strategy change, fund switch, or retirement review in ≥ 18 months"
+        data_source: "Transaction and instruction history"
+
+      - id: IC-DEC-004-03
+        label: "Potential cash drag or withdrawal concern"
+        type: [THRESHOLD, MODEL_OUTPUT]
+        definition: >
+          At least ONE of:
+            (i)  Cash sub-account > 20% of total drawdown pot
+            (ii) Annualised withdrawal rate > 6% of drawdown pot value
+        data_source: "Fund allocation data; withdrawal history"
+
+    excluding_characteristics:
+      - id: EC-DEC-004-01
+        label: "Active vulnerability flag"
+        type: FLAG
+        definition: "Active vulnerability marker"
+        alternative_support:
+          type: SPECIALIST_JOURNEY
+
+      - id: EC-DEC-004-02
+        label: "Recent independent advice"
+        type: TEMPORAL
+        definition: "Declared engagement with regulated adviser in past 12 months"
+        rationale: "Consumer has appropriate support"
+        alternative_support:
+          type: NONE_REQUIRED
+
+    assumptions_used:
+      - id: ASM-DEC-004-01
+        assumption: "Inactivity is disengagement, not a deliberate 'set and forget' strategy"
+        materiality: LOW
+        justification: >
+          'Do nothing and confirm position' is valid suggestion output.
+          Assumption does not affect suggestion suitability range.
+        disclosure_to_consumer: OPTIONAL
+
+    risk_questionnaire_permitted: false
+    notes: >
+      PS25/22 simplified monitoring: this is a one-off re-engagement prompt,
+      NOT an ongoing managed drawdown service. Firm has no ongoing individual
+      suitability monitoring obligation per final rules.
+
+    data_accuracy_verification:
+      method: "Live drawdown account data confirmed at journey initiation"
+
+    granularity_assessment:
+      verdict: SUFFICIENT
+      rationale: "Active status + inactivity period + objective financial signal"
+
+    segment_review_cadence: "Annually"
+    linked_suggestion: SUG-DEC-004

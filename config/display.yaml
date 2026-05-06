@@ -1,0 +1,66 @@
+# Display Configuration
+# Controls visual formatting and output behavior
+
+display:
+  # Progress bar settings
+  progress_bar:
+    length: 30
+    filled_char: "█"
+    empty_char: "░"
+  
+  # Confidence bar settings (for ML predictions)
+  confidence_bar:
+    length: 20
+    filled_char: "█"
+  
+  # Header formatting
+  headers:
+    primary_char: "="
+    secondary_char: "-"
+    width: 70
+  
+  # Feature importance display
+  shap_features:
+    max_display: 3  # Show top 3 most important features
+    decimal_places: 3
+  
+  # Segment scores display
+  top_segments:
+    max_display: 3  # Show top 3 segment predictions
+    percentage_format: ".1%"
+  
+  # Graph state display
+  graph:
+    max_missing_display: 5  # Show up to 5 missing traits
+  
+  # Turn metrics
+  metrics:
+    time_decimal_places: 2
+    show_min_max: true
+
+# Emoji indicators
+emojis:
+  zone1: "🔧"
+  zone1_5: "🤖"
+  zone2: "💬"
+  zone3: "🔍"
+  zone4: "📤"
+  ml_prediction: "🤖"
+  evolution: "📈"
+  state: "📊"
+  report: "📋"
+  timing: "⏱️"
+  success: "✅"
+  warning: "⚠️"
+  error: "❌"
+  info: "ℹ️"
+  user: "👤"
+  agent: "🤖"
+  rocket: "🚀"
+
+# Output verbosity levels
+verbosity:
+  quiet: 0      # Minimal output
+  normal: 1     # Standard output
+  verbose: 2    # Detailed output
+  debug: 3      # Full debug information

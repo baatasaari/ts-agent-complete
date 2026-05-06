@@ -1,0 +1,1033 @@
+# ==============================================================================
+# FCA TARGETED SUPPORT — COMPLIANCE CHECKS  (v2 — Production Grade)
+# ==============================================================================
+# Regulation : PS25/22 (final rules confirmed FCA Board 26 Feb 2026)
+# Regulatory instruments:
+#   COBS 9B     — Targeted support (new chapter; bespoke suitability)
+#   COBS 9/9A   — Individual suitability (excluded from TS; boundary reference)
+#   COBS 10/10A — Appropriateness (excluded from TS)
+#   COBS 4      — Communicating with clients (fair, clear, not misleading)
+#   COBS 16     — Information to clients; product disclosures
+#   COBS 19     — Pension access; Pension Wise signposting (mandatory)
+#   PRIN 2A     — Consumer Duty (four outcomes underpinning TS)
+#   PROD        — Product governance; manufacturer/distributor obligations
+#   SYSC        — Systems and controls; record-keeping
+#   UK GDPR     — Art. 5(1)(c) data minimisation; Art. 5(1)(d) accuracy
+#   PECR        — Privacy and Electronic Communications Regulations (direct marketing)
+#   FOS joint statement — Dec 2025 (complaints handling)
+#   ICO/FCA joint statement — Dec 2025 (direct marketing)
+#   HMT secondary legislation — workplace pension 'soft opt-in' (Dec 2025)
+#   RAO new specified activity — targeted support (effective 6 April 2026)
+#
+# CHECK STRUCTURE:
+#   Each check is machine-evaluable.  Fields:
+#     check_id        — unique stable identifier
+#     phase           — design | pre_delivery | delivery | post_delivery | monitoring
+#     severity        — HARD_BLOCK | SOFT_WARNING | DISCLOSURE_REQUIRED |
+#                       LOGGING_REQUIRED | BOUNDARY_CHECK | INFORMATION_REQUIRED
+#     rule_text       — the precise compliance obligation
+#     regulatory_source — primary citation
+#     predicate       — symbolic IF/THEN logic for neurosymbolic engine
+#     failure_action  — mandatory agent behaviour on check failure
+#     agent_notes     — AI-specific guidance
+#
+# SEVERITY DEFINITIONS:
+#   HARD_BLOCK         : Absolute prohibition. Agent MUST halt and escalate.
+#                        No override. Log every instance.
+#   SOFT_WARNING       : Material risk. Agent must log, apply safeguard,
+#                        or route to human review. Do not proceed without resolution.
+#   DISCLOSURE_REQUIRED: Mandatory disclosure must be present and confirmed before
+#                        delivery. Agent must halt delivery if absent.
+#   LOGGING_REQUIRED   : Must be captured in audit record. Agent continues but
+#                        failure to log is itself a compliance breach.
+#   BOUNDARY_CHECK     : Advice/guidance perimeter test. Agent must evaluate
+#                        and route correctly.
+#   INFORMATION_REQUIRED: Consumer information must be collected or verified
+#                         before proceeding.
+#
+# AI-AGENT NOTE (PS25/22 para 3.13 — explicit FCA acknowledgement):
+#   The FCA recognises inherent tension between AI's capacity for
+#   high-personalisation and the segment-based TS framework.  The agent
+#   must never use TS to deliver what is functionally individualised advice.
+#   Any agent logic that dynamically constructs a unique suggestion for a
+#   single consumer based on their individual profile — rather than matching
+#   them to a pre-defined segment — breaches the TS framework.
+# ==============================================================================
+
+schema_version: "2.0"
+
+# ==============================================================================
+# PHASE 0: PRE-LAUNCH / AUTHORISATION CHECKS
+# Run once before any TS activity is initiated by the firm
+# ==============================================================================
+
+pre_launch_checks:
+
+  - check_id: PL-001
+    phase: pre_launch
+    severity: HARD_BLOCK
+    label: "FCA Targeted Support Permission — Variation of Permission Required"
+    rule_text: >
+      A firm must not deliver any targeted support until it has been granted a
+      variation of permission by the FCA to undertake the new specified activity
+      of providing targeted support, as created under the RAO amendment effective
+      6 April 2026.  Appointed Representatives CANNOT deliver TS.
+    regulatory_source:
+      - "PS25/22 para 1.7; RAO new specified activity"
+      - "FSMA 2000 s.19; HMT consultation response Dec 2025 (AR exclusion)"
+    predicate: >
+      IF firm.fca_ts_permission_granted == FALSE
+        OR firm.is_appointed_representative == TRUE
+      THEN HARD_BLOCK
+    failure_action: >
+      Halt ALL targeted support activity immediately.
+      Log breach with timestamp, firm ID, and context.
+      Escalate to Chief Compliance Officer.
+      Do not resume until authorisation confirmed.
+    agent_notes: >
+      Check permission status at system startup and before any TS session
+      initiation. Permission status must be verifiable from FCA Connect
+      record or firm compliance register — not from assertion alone.
+
+  - check_id: PL-002
+    phase: pre_launch
+    severity: HARD_BLOCK
+    label: "Situations, Segments, and Suggestions Pre-Defined Before Delivery"
+    rule_text: >
+      Firms must pre-define all situations, consumer segments, and ready-made
+      suggestions BEFORE delivering any targeted support.  Delivery of TS to
+      a consumer who has not been matched to a pre-defined segment is not
+      permitted.  Dynamic real-time construction of a suggestion for an
+      individual consumer is NOT TS — it is unregulated advice.
+    regulatory_source:
+      - "PS25/22 paras 3.14–3.15; COBS 9B.3–9B.5"
+      - "AI-tension note: PS25/22 para 3.13"
+    predicate: >
+      IF ANY(suggestion.is_dynamically_constructed_for_individual == TRUE)
+        OR segment.id NOT IN pre_defined_segment_registry
+        OR situation.id NOT IN pre_defined_situation_registry
+      THEN HARD_BLOCK
+    failure_action: >
+      Halt delivery. Flag for compliance review. Do not proceed until
+      the consumer can be matched to a pre-existing approved segment.
+    agent_notes: >
+      The neurosymbolic engine must match consumers to pre-approved segments.
+      If no segment match exists, the correct action is to EXIT TS and
+      signpost to MoneyHelper — not to construct a bespoke suggestion.
+
+  - check_id: PL-003
+    phase: pre_launch
+    severity: HARD_BLOCK
+    label: "Product Governance — Firm as Manufacturer and Distributor"
+    rule_text: >
+      Firms providing TS are simultaneously the manufacturer and distributor
+      of the TS service, and the manufacturer or distributor (or both) of the
+      product that forms part of the ready-made suggestion.  All PROD
+      obligations must be satisfied before launch for each product in scope.
+    regulatory_source:
+      - "PS25/22 Ch.6; PROD; COBS 9B.10"
+      - "Consumer Duty PRIN 2A (product and service design outcome)"
+    predicate: >
+      IF firm.prod_governance_review_completed == FALSE
+        OR suggestion.product.prod_assessment_complete == FALSE
+      THEN HARD_BLOCK
+    failure_action: >
+      Halt TS launch for affected product. Complete PROD assessment.
+      Document in product governance committee minutes.
+
+  - check_id: PL-004
+    phase: pre_launch
+    severity: HARD_BLOCK
+    label: "Consumer Duty Implementation — Four Outcomes Assessment"
+    rule_text: >
+      The Consumer Duty (PRIN 2A) underpins the entire TS regime.  Before
+      launching TS, firms must assess how the service meets all four Consumer
+      Duty outcomes:
+        (1) Products and services — appropriate design for target market
+        (2) Price and value — fair value for the support provided
+        (3) Consumer understanding — clear, not misleading communications
+        (4) Consumer support — adequate post-suggestion support available
+    regulatory_source:
+      - "PS25/22 paras 3.10–3.11; PRIN 2A"
+      - "FCA Consumer Duty final rules (PS22/9)"
+    predicate: >
+      IF consumer_duty.pre_launch_assessment.all_four_outcomes_addressed == FALSE
+      THEN HARD_BLOCK
+    failure_action: "Complete Consumer Duty pre-launch assessment. Document in board-level sign-off."
+
+# ==============================================================================
+# PHASE 1: DESIGN-STAGE CHECKS
+# Applied when defining or updating situations, segments, and suggestions
+# ==============================================================================
+
+design_checks:
+
+  - check_id: DC-001
+    phase: design
+    severity: HARD_BLOCK
+    label: "In-Scope Products Only — No Excluded Products in Suggestions"
+    rule_text: >
+      Ready-made suggestions must only involve products in the following
+      in-scope categories: mass-market securities (investment funds, UCITS,
+      structured products), investment-based life insurance, structured deposits,
+      Stocks and Shares ISAs, GIAs (mass-market), DC pension contributions,
+      DC pension fund switches, DC pension access routes (drawdown/UFPLS).
+      Suggestions may include a packaged product or default arrangement with
+      minor exposure to restricted products as a component — but not as the
+      primary recommendation (e.g. a diversified fund with small LTAF allocation
+      is permitted; recommending an LTAF directly is not).
+    regulatory_source:
+      - "PS25/22 paras 3.45–3.48; COBS 9B"
+      - "Mondaq / A&O Shearman Dec 2025 product scope summary"
+    in_scope:
+      - "Mass-market securities (UCITS, authorised investment funds)"
+      - "Structured products (mass-market)"
+      - "Investment-based life insurance"
+      - "Structured deposits"
+      - "Stocks and Shares ISA"
+      - "General Investment Account (mass-market only)"
+      - "DC pension — contribution rate change"
+      - "DC pension — fund switch within scheme"
+      - "DC pension — UFPLS access"
+      - "DC pension — drawdown initiation direction"
+      - "Annuity brokerage referral (post-journey, whole-of-market only)"
+      - "Packaged/default funds with minor restricted component (firm's own assessment required)"
+    out_of_scope:
+      - "DB pension transfers"
+      - "Pension consolidation (any form)"
+      - "Specific annuity products"
+      - "Annuity quotations (including illustrative average rates)"
+      - "Non-mass-market investments (unregulated funds)"
+      - "Restricted mass-market investments (unlisted securities)"
+      - "Qualifying cryptoassets (as restricted mass-market)"
+      - "Leveraged products where loss can exceed investment"
+      - "Products subject to FCA retail marketing restrictions (COBS 22)"
+      - "Mortgages"
+      - "Pure protection insurance"
+      - "Products marketed only to non-retail clients"
+    predicate: >
+      IF suggestion.product.classification NOT IN in_scope_list
+        OR suggestion.product.is_restricted_mass_market == TRUE
+        OR suggestion.product.is_non_mass_market == TRUE
+        OR suggestion.product.is_leveraged_loss_exceeds_investment == TRUE
+        OR suggestion.product.subject_to_cobs22_restriction == TRUE
+        OR suggestion.product.is_qualifying_cryptoasset == TRUE
+      THEN HARD_BLOCK
+    failure_action: "Remove prohibited product. Redesign suggestion or halt this suggestion."
+
+  - check_id: DC-002
+    phase: design
+    severity: HARD_BLOCK
+    label: "Absolute Prohibition — No Pension Consolidation Suggestions"
+    rule_text: >
+      TS must not include any ready-made suggestion that a consumer consolidate
+      any pension arrangements — whether into or out of a particular product.
+      Consolidation guidance (key factors, not a suggestion) may be provided
+      alongside TS provided it is not integral to the ready-made suggestion
+      and does not amount to an explicit or implicit consolidation suggestion.
+    regulatory_source:
+      - "PS25/22 paras 3.40–3.44; COBS 9B"
+    predicate: >
+      IF suggestion.involves_pension_consolidation == TRUE
+        OR suggestion.description contains_any ["consolidate", "merge your pensions",
+           "combine your pots", "transfer into one"] AND context == RECOMMENDATION
+      THEN HARD_BLOCK
+    failure_action: >
+      Remove consolidation element entirely. If consolidation guidance (not
+      suggestion) is delivered alongside TS, ensure it is not integral to
+      the ready-made suggestion and is clearly framed as guidance not TS.
+
+  - check_id: DC-003
+    phase: design
+    severity: HARD_BLOCK
+    label: "Absolute Prohibition — No Specific Annuity Product Recommendation"
+    rule_text: >
+      TS must not include a recommendation of a specific named annuity product
+      or a quotation (including illustrative average rates).  TS may include:
+      (a) suggestion of annuity as an access method, (b) suggestion of annuity
+      features, (c) mandatory referral to MoneyHelper annuity tool, and
+      (d) post-journey referral to a whole-of-market annuity brokerage.
+      Fixed-term annuities with surrender options are excluded from
+      annuity-specific rules — treat as standard investment.
+    regulatory_source:
+      - "PS25/22 paras 3.35–3.39 (revised annuity position)"
+    predicate: >
+      IF suggestion.annuity.is_specific_named_product == TRUE
+        OR suggestion.annuity.includes_quotation == TRUE
+        OR suggestion.annuity.includes_illustrative_rate == TRUE
+      THEN HARD_BLOCK
+    failure_action: >
+      Replace specific annuity recommendation with annuity features guidance
+      + MoneyHelper tool referral. Remove all quotations and illustrative rates.
+
+  - check_id: DC-004
+    phase: design
+    severity: HARD_BLOCK
+    label: "Granularity Ceiling — Segments Must Not Approach Individual Assessment"
+    rule_text: >
+      Firms must not design segments with a level of detail that a firm
+      providing investment advice would reasonably associate with a comprehensive
+      consideration of an individual consumer's characteristics or circumstances.
+      A detailed psychometric risk questionnaire used to define segments exceeds
+      this ceiling.  Basic 3–5 category risk bands are permissible.
+    regulatory_source:
+      - "PS25/22 para 3.27; COBS 9B.4 (new rule)"
+      - "PS25/22 risk questionnaire guidance box (para 3.27)"
+    predicate: >
+      IF segment.uses_comprehensive_individual_risk_profile == TRUE
+        OR segment.characteristic_combination constitutes_individual_circumstance_assessment == TRUE
+        OR segment.uses_full_psychometric_risk_questionnaire == TRUE
+      THEN HARD_BLOCK
+    failure_action: >
+      Redesign segment. Remove characteristics associated with comprehensive
+      individual profiling. Reduce risk assessment to basic risk category bands.
+
+  - check_id: DC-005
+    phase: design
+    severity: HARD_BLOCK
+    label: "Granularity Floor — Segments Must Support Suitability"
+    rule_text: >
+      Consumer segments must not be so broad that the firm cannot define a
+      suitable ready-made suggestion for all consumers in the segment.
+    regulatory_source:
+      - "PS25/22 para 3.27; COBS 9B.4"
+    predicate: >
+      IF segment.has_no_including_characteristics == TRUE
+        OR segment.is_single_criterion_only AND segment.criterion_is_extremely_broad == TRUE
+      THEN HARD_BLOCK
+    failure_action: "Add differentiating including characteristics to narrow segment."
+
+  - check_id: DC-006
+    phase: design
+    severity: HARD_BLOCK
+    label: "Including AND Excluding Characteristics — Both Required"
+    rule_text: >
+      All segments must specify at least one including characteristic (to align
+      consumers with the segment) and at least one excluding characteristic (to
+      prevent incorrect alignment).
+    regulatory_source:
+      - "PS25/22 para 3.22; COBS 9B.4"
+    predicate: >
+      IF segment.including_characteristics.count < 1
+        OR segment.excluding_characteristics.count < 1
+      THEN HARD_BLOCK
+    failure_action: "Add missing including and/or excluding characteristics before segment can be used."
+
+  - check_id: DC-007
+    phase: design
+    severity: SOFT_WARNING
+    label: "Excluding Characteristics — Alternative Support Documentation"
+    rule_text: >
+      When a firm defines an excluding characteristic, it should consider:
+      (i) creating a new segment for excluded consumers, or (ii) identifying
+      alternative support.  If neither is possible, the firm must document
+      a clear rationale.  Failure to do so creates regulatory risk particularly
+      regarding vulnerable consumer outcomes.
+    regulatory_source:
+      - "PS25/22 para 3.27; COBS 9B.4"
+      - "Consumer Duty PRIN 2A — vulnerable consumer outcomes"
+    predicate: >
+      IF segment.excluding_characteristic.alternative_support IS NULL
+        AND segment.excluding_characteristic.new_segment_created == FALSE
+        AND segment.excluding_characteristic.no_alternative_rationale_documented == TRUE
+      THEN SOFT_WARNING
+    failure_action: >
+      Document rationale for absence of alternative support.
+      Flag for compliance review before segment is approved for live use.
+
+  - check_id: DC-008
+    phase: design
+    severity: HARD_BLOCK
+    label: "No Material Assumptions — Suitability Must Rest on Segment Characteristics"
+    rule_text: >
+      Firms may use reasonable assumptions to limit the number of common
+      characteristics in a segment.  Assumptions that are MATERIAL to the
+      suitability of the ready-made suggestion are prohibited.  Suitability
+      must be assessed by reference to the situation and common segment
+      characteristics — NOT assumptions.  (PS25/22 para 3.29)
+    regulatory_source:
+      - "PS25/22 paras 3.28–3.29; COBS 9B"
+    predicate: >
+      IF segment.assumption.is_material_to_suitability == TRUE
+        AND suggestion.suitability_depends_on_that_assumption == TRUE
+      THEN HARD_BLOCK
+    failure_action: >
+      Remove material assumption. Convert the assumed factor into an explicit
+      including characteristic, or redesign the suggestion so it no longer
+      depends on that factor.
+
+  - check_id: DC-009
+    phase: design
+    severity: SOFT_WARNING
+    label: "UK GDPR Data Minimisation — Segment Characteristics"
+    rule_text: >
+      Firms must apply UK GDPR Art. 5(1)(c) data minimisation when defining
+      segment characteristics.  Only data adequate, relevant, and limited to
+      what is necessary for the TS purpose should be used.  Special category
+      data (health, etc.) requires explicit justification.
+    regulatory_source:
+      - "PS25/22 para 3.24; UK GDPR Art. 5(1)(c); DPA 2018"
+    predicate: >
+      IF segment.characteristic.data_type == "special_category_data"
+        AND segment.characteristic.dpia_completed == FALSE
+      THEN SOFT_WARNING
+      IF segment.characteristic.necessity_justification IS NULL
+      THEN SOFT_WARNING
+    failure_action: >
+      Review with Data Protection Officer.  Complete DPIA if special category
+      data is used.  Document necessity justification for every characteristic.
+
+  - check_id: DC-010
+    phase: design
+    severity: BOUNDARY_CHECK
+    label: "Advice/Guidance Boundary — Suggestion Must Be Personal Recommendation Level"
+    rule_text: >
+      A ready-made suggestion must be of a type that, if delivered outside the
+      TS framework, would constitute a personal recommendation under RAO Art. 53
+      (advice on investments).  Support that falls below this threshold
+      (pure guidance) should not be delivered under the TS framework.
+      Guidance may be delivered alongside a TS suggestion, but the TS label
+      must not be applied to pure guidance.  (PS25/22 paras 3.31–3.33)
+    regulatory_source:
+      - "PS25/22 paras 3.31–3.33; RAO Art. 53; CP25/17 boundary guidance"
+    predicate: >
+      IF suggestion.constitutes_personal_recommendation == FALSE
+        AND suggestion.is_pure_guidance == TRUE
+      THEN BOUNDARY_CHECK (route to guidance delivery; do NOT label as TS)
+    failure_action: >
+      Reclassify as guidance. Deliver outside TS framework.
+      Do NOT apply the 'targeted support' label to guidance-only content.
+
+  - check_id: DC-011
+    phase: design
+    severity: INFORMATION_REQUIRED
+    label: "Consumer Check Question — Medium-Materiality Assumptions"
+    rule_text: >
+      Where a segment uses a MEDIUM-materiality assumption (see segmentations
+      YAML), the segment design must include a consumer check question that
+      surfaces and validates the assumption during the TS journey — before
+      segment alignment is finalised.
+    regulatory_source:
+      - "PS25/22 paras 3.28–3.29; COBS 9B"
+    predicate: >
+      IF segment.assumption.materiality == MEDIUM
+        AND segment.assumption.consumer_check_required == TRUE
+        AND suggestion_journey.consumer_check_question_present == FALSE
+      THEN INFORMATION_REQUIRED
+    failure_action: "Add consumer check question to journey before this segment can be used live."
+
+# ==============================================================================
+# PHASE 2: PRE-DELIVERY CHECKS
+# Applied immediately before a suggestion is delivered to a specific consumer
+# ==============================================================================
+
+pre_delivery_checks:
+
+  - check_id: PDC-001
+    phase: pre_delivery
+    severity: HARD_BLOCK
+    label: "Segment Alignment Verified — Consumer Matches All Including Criteria"
+    rule_text: >
+      Before delivering a suggestion, the firm must verify that the consumer
+      meets ALL including characteristics of the matched segment, and NONE of
+      the excluding characteristics.  Alignment must be based on accurate,
+      up-to-date data.
+    regulatory_source:
+      - "PS25/22 para 3.49; COBS 9B.4; GDPR Art. 5(1)(d) accuracy"
+    predicate: >
+      IF consumer.meets_all_including_characteristics(segment) == FALSE
+        OR consumer.meets_any_excluding_characteristic(segment) == TRUE
+      THEN HARD_BLOCK
+    failure_action: >
+      Do not deliver suggestion. Route consumer to alternative support per
+      segment's excluding_characteristic.alternative_support specification.
+      Log failed alignment attempt.
+
+  - check_id: PDC-002
+    phase: pre_delivery
+    severity: HARD_BLOCK
+    label: "Data Accuracy — Verify Before Segment Alignment"
+    rule_text: >
+      A firm must take reasonable steps to ensure data used to align a consumer
+      with a segment is accurate and up-to-date.  If the firm suspects data
+      may not be accurate, it MUST verify with the consumer before proceeding
+      to alignment.  (PS25/22 paras 3.49–3.51; GDPR Art. 5(1)(d))
+    regulatory_source:
+      - "PS25/22 paras 3.49–3.51; UK GDPR Art. 5(1)(d)"
+    predicate: >
+      IF data.last_verified_date > data.stale_threshold
+        OR data.accuracy_confidence < threshold.minimum_confidence
+      THEN INFORMATION_REQUIRED (verify with consumer before proceeding)
+      IF verification_attempted AND consumer_disputes_data == TRUE
+      THEN HARD_BLOCK (re-evaluate segment match with corrected data)
+    failure_action: >
+      Present key data points to consumer for confirmation.
+      If consumer corrects data, re-run segment alignment with corrected data.
+      If corrected data invalidates segment match, exit TS — signpost MoneyHelper.
+
+  - check_id: PDC-003
+    phase: pre_delivery
+    severity: HARD_BLOCK
+    label: "Known Unsuitability Override — Additional Information Check"
+    rule_text: >
+      A firm must not provide a suggestion if it is, or ought reasonably to be,
+      aware of information indicating the suggestion may not be suitable for that
+      specific consumer.  This applies to:
+        (i)  Information already held by the firm (in any system)
+        (ii) Information volunteered by the consumer during the TS journey
+      Firms are not required to seek information beyond that needed for
+      segment alignment.  But if material information is encountered, it must
+      be acted on.  (PS25/22 paras 3.52–3.55; COBS 9B suitability override)
+    regulatory_source:
+      - "PS25/22 paras 3.52–3.55; COBS 9B; Principle 9"
+    predicate: >
+      IF consumer.known_information.indicates_unsuitability == TRUE
+        OR consumer.volunteered_information.indicates_unsuitability == TRUE
+        OR consumer.active_excluding_characteristic_signal_detected == TRUE
+      THEN HARD_BLOCK
+    failure_action: >
+      Halt suggestion delivery immediately.
+      Acknowledge consumer's information.
+      Route to alternative support per segment's excluding characteristic specification.
+      Log the override with reason and information source.
+    agent_notes: >
+      The agent must process both structured data (flags, account data) AND
+      unstructured signals (consumer statements in natural language during the
+      journey) for potential unsuitability indicators.  Known vulnerable consumer
+      signals, debt distress statements, or expressions of urgency for cash
+      are all triggers for this check.
+
+  - check_id: PDC-004
+    phase: pre_delivery
+    severity: HARD_BLOCK
+    label: "Retail Client Classification Confirmed"
+    rule_text: >
+      The firm must treat the consumer as a RETAIL CLIENT for the purposes of
+      targeted support, even if the consumer could otherwise be classified as
+      a professional client.  All TS consumer protections apply.
+    regulatory_source:
+      - "PS25/22; CP25/17; COBS client categorisation rules"
+    predicate: >
+      IF delivery.consumer.classification_for_ts != "retail_client"
+      THEN HARD_BLOCK
+    failure_action: "Set consumer classification to retail client for this TS interaction. Log."
+
+  - check_id: PDC-005
+    phase: pre_delivery
+    severity: HARD_BLOCK
+    label: "No PDS Post-View Service Delivery"
+    rule_text: >
+      Firms operating a Pension Dashboard Service (PDS) must not offer or
+      provide targeted support as a post-view service (PVS) within the
+      pension dashboard context.
+    regulatory_source:
+      - "PS25/22; Hogan Lovells Dec 2025; PDS regulations"
+    predicate: >
+      IF delivery.channel == "pension_dashboard_post_view_service"
+        OR delivery.context.is_pds_pvs == TRUE
+      THEN HARD_BLOCK
+    failure_action: >
+      Halt TS delivery in PDS context. Route consumer to standalone TS
+      journey outside the pension dashboard environment.
+
+  - check_id: PDC-006
+    phase: pre_delivery
+    severity: HARD_BLOCK
+    label: "Appointed Representative — Cannot Deliver TS"
+    rule_text: >
+      Targeted support may only be delivered by directly authorised firms.
+      Appointed representatives are expressly excluded from delivering TS.
+    regulatory_source:
+      - "HMT consultation response Dec 2025; PS25/22"
+    predicate: >
+      IF delivery.delivering_entity.is_appointed_representative == TRUE
+      THEN HARD_BLOCK
+    failure_action: >
+      Halt. Route consumer to directly authorised firm. Log attempted AR delivery.
+
+  - check_id: PDC-007
+    phase: pre_delivery
+    severity: INFORMATION_REQUIRED
+    label: "Medium-Materiality Assumption Consumer Check Completed"
+    rule_text: >
+      Where the matched segment uses a MEDIUM-materiality assumption,
+      the consumer check question (see DC-011) must have been presented
+      and a valid response recorded before proceeding to suggestion delivery.
+    regulatory_source:
+      - "PS25/22 paras 3.28–3.29; COBS 9B"
+    predicate: >
+      IF segment.has_medium_materiality_assumption == TRUE
+        AND journey.consumer_check_question_answered == FALSE
+      THEN INFORMATION_REQUIRED
+    failure_action: >
+      Present consumer check question. Record response.
+      If response invalidates segment match, exit TS — do not deliver suggestion.
+
+# ==============================================================================
+# PHASE 3: DELIVERY-STAGE CHECKS
+# Applied at the moment a suggestion is delivered to the consumer
+# ==============================================================================
+
+delivery_checks:
+
+  - check_id: DEL-001
+    phase: delivery
+    severity: HARD_BLOCK
+    label: "Mandatory Service Label — 'Targeted Support'"
+    rule_text: >
+      The firm MUST explicitly label the service as "targeted support" at the
+      point of delivering a ready-made suggestion.  This is a new mandatory
+      disclosure in the final PS25/22 rules.  The label must be clear and
+      prominent.  The label must not be applied to guidance-only content.
+    regulatory_source:
+      - "PS25/22 para 2.8 (new mandatory disclosure); COBS 9B"
+    predicate: >
+      IF delivery.communication.service_label_present == FALSE
+        OR delivery.communication.service_label_text != "targeted support"
+        OR delivery.communication.label_is_clear_and_prominent == FALSE
+      THEN HARD_BLOCK
+    failure_action: "Halt delivery. Add mandatory 'targeted support' label. Resubmit."
+
+  - check_id: DEL-002
+    phase: delivery
+    severity: HARD_BLOCK
+    label: "Not Personalised Advice — Nature and Limitations Disclosure"
+    rule_text: >
+      Firms must communicate to the consumer that:
+        (i)  This is targeted support, not comprehensive individualised advice
+        (ii) The recommendation has been designed for a group of consumers
+             with common characteristics
+        (iii) It is not based on a comprehensive consideration of their
+              individual circumstances
+    regulatory_source:
+      - "PS25/22 paras 1.9, 2.7; COBS 9B; COBS 4"
+    predicate: >
+      IF delivery.disclosure.nature_and_limitations_present == FALSE
+        OR delivery.disclosure.not_individual_advice_statement == FALSE
+        OR delivery.disclosure.segment_based_explanation == FALSE
+      THEN HARD_BLOCK
+    failure_action: "Add nature and limitations disclosure. Halt delivery until present."
+
+  - check_id: DEL-003
+    phase: delivery
+    severity: HARD_BLOCK
+    label: "Segment Characteristics Disclosed to Consumer"
+    rule_text: >
+      When delivering TS, the firm must disclose to the consumer the common
+      characteristics of the consumer segment on which the suggestion is based.
+      The consumer must understand WHY they have received this suggestion.
+    regulatory_source:
+      - "PS25/22 para 2.7; COBS 9B disclosure requirements"
+    predicate: >
+      IF delivery.disclosure.segment_characteristics_stated == FALSE
+      THEN HARD_BLOCK
+    failure_action: "Add segment characteristics disclosure. Halt until present."
+
+  - check_id: DEL-004
+    phase: delivery
+    severity: DISCLOSURE_REQUIRED
+    label: "Product Scope Limitations Disclosed"
+    rule_text: >
+      Where a firm's suggestion is limited to products within its own range
+      (rather than whole-of-market), this limitation must be disclosed to
+      the consumer.
+    regulatory_source:
+      - "PS25/22; COBS 9B; COBS 16"
+    predicate: >
+      IF firm.product_scope_is_restricted == TRUE
+        AND delivery.disclosure.product_scope_limitations_stated == FALSE
+      THEN DISCLOSURE_REQUIRED
+    failure_action: "Add product scope limitation disclosure."
+
+  - check_id: DEL-005
+    phase: delivery
+    severity: DISCLOSURE_REQUIRED
+    label: "Capital at Risk Disclosure"
+    rule_text: >
+      Where the suggestion involves an investment product where capital is at
+      risk, a prominent capital-at-risk disclosure must be included in the
+      delivery communication.
+    regulatory_source:
+      - "COBS 4 (fair, clear, not misleading); Consumer Duty PRIN 2A"
+    predicate: >
+      IF suggestion.product.capital_at_risk == TRUE
+        AND delivery.disclosure.capital_at_risk_present == FALSE
+      THEN DISCLOSURE_REQUIRED
+    failure_action: "Add capital at risk disclosure."
+
+  - check_id: DEL-006
+    phase: delivery
+    severity: HARD_BLOCK
+    label: "MoneyHelper Signpost — Mandatory on All Suggestions"
+    rule_text: >
+      All targeted support delivery communications must include a signpost
+      to MoneyHelper.  For pension-related suggestions, a Pension Wise
+      signpost is also mandatory under COBS 19.  Signposts must include
+      the MoneyHelper URL.
+    regulatory_source:
+      - "PS25/22 Ch.4; COBS 16; COBS 19; MaPS joint working"
+    predicate: >
+      IF delivery.signpost.moneyhelper_present == FALSE
+      THEN HARD_BLOCK
+      IF suggestion.domain IN [DC_PENSION_ACCUMULATION, DC_PENSION_DECUMULATION]
+        AND delivery.signpost.pension_wise_present == FALSE
+      THEN HARD_BLOCK
+    failure_action: "Add mandatory MoneyHelper and/or Pension Wise signpost before delivery."
+
+  - check_id: DEL-007
+    phase: delivery
+    severity: DISCLOSURE_REQUIRED
+    label: "Pension Projection Disclaimer — Standardised Assumptions"
+    rule_text: >
+      Where a suggestion includes a pension income projection, the communication
+      must clearly state that the projection uses standardised assumptions and
+      is NOT a personalised retirement forecast or guarantee.
+    regulatory_source:
+      - "COBS illustration rules; PS25/22; Consumer Duty PRIN 2A"
+    predicate: >
+      IF suggestion.includes_pension_projection == TRUE
+        AND delivery.disclosure.projection_disclaimer_present == FALSE
+      THEN DISCLOSURE_REQUIRED
+    failure_action: "Add projection disclaimer."
+
+  - check_id: DEL-008
+    phase: delivery
+    severity: DISCLOSURE_REQUIRED
+    label: "Annuity Irrevocability Disclosure"
+    rule_text: >
+      Where a suggestion involves an annuity pathway (direction or referral),
+      the communication must disclose that an annuity is generally an
+      irreversible decision.
+    regulatory_source:
+      - "PS25/22 Ch.3 annuity rules; COBS 19; Consumer Duty"
+    predicate: >
+      IF suggestion.involves_annuity_pathway == TRUE
+        AND delivery.disclosure.annuity_irrevocability_present == FALSE
+      THEN DISCLOSURE_REQUIRED
+    failure_action: "Add annuity irrevocability disclosure."
+
+  - check_id: DEL-009
+    phase: delivery
+    severity: DISCLOSURE_REQUIRED
+    label: "Charge Variation Disclosure"
+    rule_text: >
+      If product charges vary depending on whether the consumer accesses the
+      product through targeted support or another route, this must be disclosed.
+      Firms are NOT required to disclose their general remuneration basis or
+      cross-subsidisation arrangements (PS25/22 revised charging rules).
+    regulatory_source:
+      - "PS25/22 Ch.5 (revised charging rules); COBS 9B"
+    predicate: >
+      IF suggestion.product.charge_varies_by_access_route == TRUE
+        AND delivery.disclosure.charge_variation_stated == FALSE
+      THEN DISCLOSURE_REQUIRED
+    failure_action: "Add charge variation disclosure."
+
+  - check_id: DEL-010
+    phase: delivery
+    severity: DISCLOSURE_REQUIRED
+    label: "Annuity Brokerage Referral Fee Disclosure"
+    rule_text: >
+      Where a firm refers a consumer to a whole-of-market annuity brokerage
+      after a TS journey, any referral fee received by the firm must be
+      disclosed per existing FCA inducement rules and transparency requirements.
+    regulatory_source:
+      - "PS25/22 paras 3.38–3.39; FCA inducement rules; existing annuity journey requirements"
+    predicate: >
+      IF post_journey.annuity_brokerage_referral_made == TRUE
+        AND delivery.disclosure.referral_fee_disclosed == FALSE
+        AND firm.receives_referral_fee == TRUE
+      THEN DISCLOSURE_REQUIRED
+    failure_action: "Add referral fee disclosure before providing brokerage information post-journey."
+
+  - check_id: DEL-011
+    phase: delivery
+    severity: HARD_BLOCK
+    label: "Annuity Journey End Communication Required"
+    rule_text: >
+      Where a firm provides annuity brokerage information after a TS journey,
+      it must first communicate clearly to the consumer that the targeted support
+      journey has ENDED, and that subsequent annuity information forms part of
+      a separate process.
+    regulatory_source:
+      - "PS25/22 para 3.39 (journey end requirement)"
+    predicate: >
+      IF post_journey.annuity_brokerage_information_provided == TRUE
+        AND delivery.communication.ts_journey_end_stated == FALSE
+      THEN HARD_BLOCK
+    failure_action: >
+      Insert journey-end communication before providing brokerage information.
+      Do not provide annuity brokerage details within the TS journey itself.
+
+  - check_id: DEL-012
+    phase: delivery
+    severity: HARD_BLOCK
+    label: "COBS 4 — Communication Fair, Clear, and Not Misleading"
+    rule_text: >
+      All targeted support delivery communications must comply with COBS 4 —
+      they must be fair, clear, and not misleading.  Specifically:
+        (i)   Must not imply guaranteed investment returns
+        (ii)  Must not present TS as equivalent to personalised regulated advice
+        (iii) Must not create undue urgency or pressure
+        (iv)  Must not omit material information that would affect consumer understanding
+        (v)   Risk warnings must be appropriately prominent
+    regulatory_source:
+      - "COBS 4.2; PS25/22; Consumer Duty PRIN 2A — consumer understanding outcome"
+    predicate: >
+      IF delivery.communication.implies_guaranteed_returns == TRUE
+        OR delivery.communication.presents_ts_as_full_advice == TRUE
+        OR delivery.communication.creates_undue_urgency == TRUE
+        OR delivery.communication.omits_material_risk_information == TRUE
+        OR delivery.communication.risk_warnings_not_prominent == TRUE
+      THEN HARD_BLOCK
+    failure_action: >
+      Halt. Revise communication to meet COBS 4 standards.
+      Submit to compliance review before re-deployment.
+
+  - check_id: DEL-013
+    phase: delivery
+    severity: LOGGING_REQUIRED
+    label: "Delivery Audit Record — Mandatory Capture"
+    rule_text: >
+      Firms must maintain records to facilitate FCA supervision of TS.
+      Every suggestion delivery event must create an audit record containing:
+        (i)   Consumer ID (pseudonymised for GDPR)
+        (ii)  Segment ID matched
+        (iii) Situation ID
+        (iv)  Suggestion ID delivered
+        (v)   Disclosures presented (checklist)
+        (vi)  Consumer's action / response (accepted, declined, exited)
+        (vii) Timestamp
+        (viii) Channel
+        (ix)  Any override events (PDC-003 unsuitability overrides)
+        (x)   Data accuracy verification record
+    regulatory_source:
+      - "PS25/22 Ch.8 (record-keeping); SYSC; FOS joint statement Dec 2025"
+    predicate: >
+      IF delivery.audit_record.all_required_fields_captured == FALSE
+      THEN LOGGING_REQUIRED
+    failure_action: >
+      Flag incomplete record. Attempt to reconstruct from session data.
+      Log gap in records. Escalate to compliance if systematic.
+
+  - check_id: DEL-014
+    phase: delivery
+    severity: INFORMATION_REQUIRED
+    label: "No Pension Consolidation Suggestion — Affirmative Journey Check"
+    rule_text: >
+      Where the TS journey is in the pensions domain, the delivery communication
+      must affirmatively state that pension consolidation is not being suggested.
+      This prevents consumer confusion between TS and consolidation journeys.
+    regulatory_source:
+      - "PS25/22 paras 3.40–3.44; COBS 9B"
+    predicate: >
+      IF suggestion.domain IN [DC_PENSION_ACCUMULATION, DC_PENSION_DECUMULATION]
+        AND delivery.disclosure.no_consolidation_statement_present == FALSE
+      THEN INFORMATION_REQUIRED
+    failure_action: "Add explicit 'this does not involve consolidating your pension pots' statement."
+
+# ==============================================================================
+# PHASE 4: POST-DELIVERY / MONITORING CHECKS
+# Ongoing obligations — Consumer Duty outcomes; COBS 9B monitoring; PROD
+# ==============================================================================
+
+monitoring_checks:
+
+  - check_id: MON-001
+    phase: monitoring
+    severity: LOGGING_REQUIRED
+    label: "Segment-Level Outcome Monitoring — Regular Review"
+    rule_text: >
+      Firms must regularly review and monitor the outcomes of the TS service
+      at SEGMENT level.  There is NO ongoing individual suitability assessment
+      obligation per PS25/22 simplified monitoring rules.  Monitoring must
+      include the KPI set specified in the relevant suggestion record.
+    regulatory_source:
+      - "PS25/22 para 2.8 (simplified monitoring); COBS 9B.10; PROD; PRIN 2A"
+    predicate: >
+      IF segment.monitoring.last_review_date > monitoring.max_review_interval
+        OR segment.monitoring.kpis_not_captured == TRUE
+      THEN LOGGING_REQUIRED (flag for overdue review)
+    parameters:
+      minimum_review_interval: "12 months (more frequently for high-volume or high-risk segments)"
+      kpis_required: >
+        As specified in linked suggestion monitoring_trigger.kpis field.
+        Minimum: conversion rate, 12-month retention rate, complaint rate.
+    failure_action: "Schedule overdue segment review. Escalate to product governance committee."
+
+  - check_id: MON-002
+    phase: monitoring
+    severity: SOFT_WARNING
+    label: "Significant Product Adaptation — Re-suitability Assessment"
+    rule_text: >
+      If a firm makes a significant adaptation to a product that forms part of
+      a ready-made suggestion, it must consider the impact on the suitability
+      of the suggestion for the relevant consumer segment (PROD + Consumer Duty).
+    regulatory_source:
+      - "PS25/22 Ch.6; PROD; COBS 9B.10"
+    predicate: >
+      IF product.significant_adaptation_occurred == TRUE
+        AND suggestion.post_adaptation_suitability_review_completed == FALSE
+      THEN SOFT_WARNING
+    failure_action: >
+      Pause affected suggestion delivery.
+      Conduct suitability review of segment against adapted product.
+      Resume only if suitability confirmed; withdraw or redesign if not.
+
+  - check_id: MON-003
+    phase: monitoring
+    severity: SOFT_WARNING
+    label: "Adverse Outcome Signal — Consumer Harm Detection"
+    rule_text: >
+      Under Consumer Duty (PRIN 2A), firms must monitor for and respond to
+      signals of consumer harm arising from TS at segment level.  Systematic
+      adverse outcomes must trigger a segment review and, where necessary,
+      withdrawal or redesign of the suggestion.
+    regulatory_source:
+      - "PS25/22 Ch.3 & 6; PRIN 2A; COBS 9B"
+    predicate: >
+      IF segment.metrics.adverse_outcome_rate > threshold.harm_signal (default 5%)
+        OR segment.metrics.complaint_rate > threshold.complaint_signal (default 0.5%)
+        OR segment.metrics.early_product_surrender_rate > threshold.surrender_signal
+        OR segment.metrics.consumer_loss_rate_above_benchmark == TRUE
+      THEN SOFT_WARNING
+    failure_action: >
+      Flag segment for urgent review.
+      Consider immediate suspension of suggestion delivery.
+      Report to senior management and Consumer Duty board champion.
+      Investigate root cause. Document actions.
+
+  - check_id: MON-004
+    phase: monitoring
+    severity: SOFT_WARNING
+    label: "Vulnerable Consumer Outcome Monitoring"
+    rule_text: >
+      Under Consumer Duty, firms must monitor outcomes for consumers with
+      characteristics of vulnerability.  If vulnerable consumers are being
+      excluded at disproportionate rates or experiencing worse outcomes,
+      excluding characteristics and alternative support provisions must be
+      reviewed.  (PS25/22 para 3.26; FCA Guidance FG21/1)
+    regulatory_source:
+      - "PS25/22 para 3.26; PRIN 2A Consumer Duty; FCA FG21/1"
+    predicate: >
+      IF segment.metrics.vulnerable_consumer_exclusion_rate > threshold.disproportionate
+        OR segment.metrics.vulnerable_consumer_worse_outcomes == TRUE
+      THEN SOFT_WARNING
+    failure_action: >
+      Review excluding characteristics for proportionality impact.
+      Review alternative support provisions for excluded vulnerable consumers.
+      Report to Consumer Duty governance committee.
+
+  - check_id: MON-005
+    phase: monitoring
+    severity: LOGGING_REQUIRED
+    label: "FOS Complaint Logging and Systemic Signal Detection"
+    rule_text: >
+      Complaints relating to TS may be referred to the FOS (eligible claims fall
+      under FSCS).  All TS complaints must be logged and assessed for systemic
+      indicators.  Where complaints indicate a systemic issue, the FCA/FOS joint
+      statement (Dec 2025) process applies.  FCA may need to be engaged.
+    regulatory_source:
+      - "PS25/22 Ch.7; FCA/FOS Joint Statement Dec 2025; DISP"
+    predicate: >
+      IF consumer.complaint.relates_to_targeted_support == TRUE
+      THEN LOGGING_REQUIRED
+      IF complaint.systemic_issue_indicated == TRUE
+      THEN SOFT_WARNING (engage compliance; consider FCA notification)
+    failure_action: >
+      Log complaint with all delivery audit record fields.
+      Assess for systemic signal.
+      If systemic: engage Chief Compliance Officer; consider FCA notification.
+
+  - check_id: MON-006
+    phase: monitoring
+    severity: LOGGING_REQUIRED
+    label: "Direct Marketing Compliance — Firm-Initiative Proactive Communications"
+    rule_text: >
+      All proactive firm-initiative TS communications must have a documented
+      legal basis under PECR and the ICO/FCA joint statement (Dec 2025).
+      Workplace pension providers may use 'soft opt-in' under HMT secondary
+      legislation (Dec 2025).  All other firms must rely on consent or
+      ICO-approved permissible approaches.  Legal basis must be documented
+      per communication channel and consumer cohort.
+    regulatory_source:
+      - "PS25/22; PECR Reg. 22; ICO/FCA Joint Statement Dec 2025"
+      - "HMT secondary legislation — workplace pension soft opt-in Dec 2025"
+    predicate: >
+      IF communication.trigger == FIRM_INITIATIVE
+        AND communication.direct_marketing_legal_basis IS NULL
+      THEN LOGGING_REQUIRED (flag for DPO review)
+    failure_action: >
+      Document legal basis for every proactive communication channel.
+      DPO sign-off required before channel goes live.
+      Suspend proactive communications lacking documented legal basis.
+
+  - check_id: MON-007
+    phase: monitoring
+    severity: LOGGING_REQUIRED
+    label: "FCA Post-Implementation Review Data Readiness — 2028 Milestone"
+    rule_text: >
+      Within 2 years of the authorisation gateway opening (March 2026), the FCA
+      will conduct a PIR assessing: number of firms offering TS, customer uptake,
+      types of products and actions suggested, and whether outcomes are improving.
+      Firms must retain data sufficient to support this review from day one.
+    regulatory_source:
+      - "PS25/22 para 2.16; FCA PIR commitment"
+    pir_trigger_date: "2028-03-01"
+    data_required:
+      - "Number of TS suggestions delivered — by segment, situation, suggestion ID"
+      - "Consumer conversion and opt-in rates — by segment"
+      - "Product types suggested — monthly breakdown"
+      - "12-month outcome indicators — retention, complaints, product performance"
+      - "Vulnerable consumer exclusion and outcome data"
+      - "Pension Wise and MoneyHelper referral take-up rates"
+      - "Override events (PDC-003 unsuitability overrides)"
+      - "Channel breakdown (digital, telephone, branch)"
+    predicate: >
+      IF monitoring.data_retention.covers_all_pir_required_fields == FALSE
+      THEN LOGGING_REQUIRED
+    failure_action: >
+      Implement data capture for all PIR fields.
+      Confirm with compliance team.
+      Retain data for minimum 6 years from delivery date (SYSC record-keeping).
+
+  - check_id: MON-008
+    phase: monitoring
+    severity: SOFT_WARNING
+    label: "Consumer Duty Annual Board Report — TS Section"
+    rule_text: >
+      Firms subject to Consumer Duty must produce an annual report to the
+      board assessing whether they are delivering good outcomes.  TS outcomes
+      data must be included in this report, covering whether the TS service
+      is meeting the four Consumer Duty outcomes for the relevant segments.
+    regulatory_source:
+      - "PRIN 2A Consumer Duty; PS22/9 (Consumer Duty final rules)"
+    predicate: >
+      IF consumer_duty.annual_board_report.ts_section_included == FALSE
+        AND reporting_period_end_passed == TRUE
+      THEN SOFT_WARNING
+    failure_action: "Include TS outcomes data in Consumer Duty annual board report."
+
+  - check_id: MON-009
+    phase: monitoring
+    severity: LOGGING_REQUIRED
+    label: "AI System Change — Re-run Design Checks"
+    rule_text: >
+      Where an AI system (including this neurosymbolic agent) is updated in a
+      way that changes how consumers are matched to segments, how suggestions
+      are selected, or how disclosures are assembled — all design-stage checks
+      (DC-001 through DC-011) must be re-run against the updated system before
+      re-deployment.  The FCA expects firms to engage with its AI Lab on
+      AI-specific TS implementations.  (PS25/22 para 3.13)
+    regulatory_source:
+      - "PS25/22 para 3.13 (AI tension note); SYSC; Consumer Duty"
+      - "FCA AI Lab engagement expectation"
+    predicate: >
+      IF ai_system.version_changed == TRUE
+        AND ai_system.design_checks_rerun == FALSE
+      THEN LOGGING_REQUIRED (flag for compliance review before re-deployment)
+    failure_action: >
+      Pause AI system update deployment.
+      Re-run all design checks against updated system.
+      Document results and obtain compliance sign-off.
+      Consider FCA AI Lab engagement for material changes.

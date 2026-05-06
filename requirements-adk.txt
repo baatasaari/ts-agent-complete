@@ -1,0 +1,50 @@
+# requirements-adk.txt
+# ─────────────────────────────────────────────────────────────────────────────
+# google-adk and its dependencies — only needed in production when running
+# with a live Gemini LLM.  NOT required for the demo or unit tests.
+#
+# Install AFTER requirements-core.txt:
+#   uv pip install -r requirements-adk.txt
+#
+# If your Nexus does not have these, the demo still works without them.
+# The google-cloud-* packages are only used by the production GCP stack.
+# ─────────────────────────────────────────────────────────────────────────────
+
+google-adk==1.31.1
+google-genai==1.74.0
+
+# ── ADK transitive dependencies ───────────────────────────────────────────────
+anyio==4.13.0
+fastapi==0.136.1
+starlette==0.52.1
+uvicorn==0.46.0
+websockets==15.0.1
+httpx==0.28.1
+httpx-sse==0.4.3
+mcp==1.27.0
+aiosqlite==0.21.0
+authlib==1.7.0
+python-dotenv==1.2.2
+pydantic-settings==2.14.0
+click==8.3.1
+tenacity==9.1.4
+tzlocal==5.3.1
+watchdog==6.0.0
+graphviz==0.21
+jsonschema==4.26.0
+jsonschema-specifications==2025.9.1
+requests==2.33.1
+
+# ── Google API clients ────────────────────────────────────────────────────────
+google-api-core==2.30.3
+google-api-python-client==2.194.0
+google-auth==2.49.2
+google-auth-httplib2==0.3.1
+
+# ── Optional: Google Cloud services (only if using GCP backend) ───────────────
+# Uncomment if you have access to these on Nexus:
+# google-cloud-pubsub==2.21.4
+# google-cloud-spanner==3.53.0
+# google-cloud-bigquery==3.31.0
+# google-cloud-storage==2.19.0
+# google-cloud-aiplatform==1.91.0

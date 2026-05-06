@@ -1,0 +1,425 @@
+# ══════════════════════════════════════════════════════════════════════════════
+# FCA PS25/22 Targeted Support — Comprehensive Scenario Catalogue
+# ══════════════════════════════════════════════════════════════════════════════
+# Live: 6 April 2026 | Rulebook: COBS 9B | Policy: PS25/22
+#
+# This file contains ALL 14 situations across 4 domains as defined by FCA PS25/22.
+# Each scenario includes:
+# - Situation and segment mapping
+# - Expected bank data characteristics
+# - Typical gap-fill questions
+# - Expected outcomes
+#
+# Domains:
+# - Retail Investments (SIT-INV-001 to SIT-INV-006)
+# - Structured Deposits (SIT-SD-001)
+# - DC Pension Accumulation (SIT-PEN-001 to SIT-PEN-003)
+# - DC Pension Decumulation (SIT-DEC-001 to SIT-DEC-004)
+# ══════════════════════════════════════════════════════════════════════════════
+
+scenarios:
+  
+  # ────────────────────────────────────────────────────────────────────────────
+  # RETAIL INVESTMENTS (6 situations)
+  # ────────────────────────────────────────────────────────────────────────────
+  
+  cash_drag_saver:
+    id: "1"
+    name: "Cash Drag — Under-Invested Saver"
+    situation_id: "SIT-INV-001"
+    intent_id: "INTENT-CASH-DRAG"
+    segment_id: "SEG-INV-001"
+    description: "Consumer with significant cash savings but no investments"
+    trigger: "Firm initiative"
+    bank_data:
+      party_ref: "CUST-INV-001"
+      age: 35
+      employment_status: "EMPLOYED"
+      savings_balance: 45000
+      current_investments: false
+      account_tenure_months: 18
+      monthly_surplus: 600
+      high_cost_debt: false
+      vulnerability_flag: false
+    expected_segment: "SEG-INV-001"
+    expected_suggestion: "SUG-INV-001"
+    typical_turns: 4-6
+    expected_outcome: "EMIT"
+  
+  first_time_investor:
+    id: "2"
+    name: "First-Time Investor — Knowledge Barrier"
+    situation_id: "SIT-INV-002"
+    intent_id: "INTENT-FIRST-TIME-INVESTOR"
+    segment_id: "SEG-INV-002"
+    description: "Young professional wanting to start investing"
+    trigger: "Consumer request"
+    bank_data:
+      party_ref: "CUST-INV-002"
+      age: 28
+      employment_status: "EMPLOYED"
+      savings_balance: 8000
+      current_investments: false
+      monthly_surplus: 400
+      vulnerability_flag: false
+      high_cost_debt: false
+    expected_segment: "SEG-INV-002"
+    expected_suggestion: "SUG-INV-002"
+    typical_turns: 3-5
+    expected_outcome: "EMIT"
+  
+  isa_allowance:
+    id: "3"
+    name: "ISA Allowance Non-Utilisation — Tax Year End"
+    situation_id: "SIT-INV-003"
+    intent_id: "INTENT-ISA-ALLOWANCE"
+    segment_id: "SEG-INV-003"
+    description: "Consumer with savings but hasn't used ISA allowance"
+    trigger: "Firm initiative"
+    bank_data:
+      party_ref: "CUST-INV-003"
+      savings_balance: 5000
+      monthly_surplus: 300
+      isa_subscription_this_year: false
+      tax_year_window: true  # Within 90 days of 5 April
+      current_investments: false
+      vulnerability_flag: false
+    expected_segment: "SEG-INV-003"
+    expected_suggestion: "SUG-INV-003"
+    typical_turns: 2-4
+    expected_outcome: "EMIT"
+  
+  lump_sum:
+    id: "4"
+    name: "Lump Sum Capital Event — Investment Direction"
+    situation_id: "SIT-INV-004"
+    intent_id: "INTENT-LUMP-SUM"
+    segment_id: "SEG-INV-004"
+    description: "Consumer received inheritance/bonus to invest"
+    trigger: "Both (consumer or firm)"
+    bank_data:
+      party_ref: "CUST-INV-004"
+      lump_sum_amount: 25000
+      lump_sum_reason: "inheritance"
+      current_investments: false
+      monthly_surplus: 600
+      vulnerability_flag: false
+      arrears_flag: false
+    expected_segment: "SEG-INV-004"
+    expected_suggestion: "SUG-INV-004"
+    typical_turns: 3-6
+    expected_outcome: "EMIT"
+  
+  dormant_investment:
+    id: "5"
+    name: "Dormant Investment Account — Re-Engagement"
+    situation_id: "SIT-INV-005"
+    intent_id: "INTENT-DORMANT-INVESTMENT"
+    segment_id: "SEG-INV-005"
+    description: "Consumer has investment but inactive for 12+ months"
+    trigger: "Firm initiative"
+    bank_data:
+      party_ref: "CUST-INV-005"
+      current_investments: true
+      investment_last_activity_months: 18
+      investment_balance: 15000
+      vulnerability_flag: false
+      recent_engagement: false
+    expected_segment: "SEG-INV-005"
+    expected_suggestion: "SUG-INV-005"
+    typical_turns: 2-4
+    expected_outcome: "EMIT"
+  
+  regular_saver_upgrade:
+    id: "6"
+    name: "Regular Saver Seeking Investment Upgrade"
+    situation_id: "SIT-INV-006"
+    intent_id: "INTENT-REGULAR-SAVER"
+    segment_id: "SEG-INV-006"
+    description: "Consumer regularly saves but doesn't invest"
+    trigger: "Firm initiative"
+    bank_data:
+      party_ref: "CUST-INV-006"
+      regular_saving_monthly: 200
+      regular_saving_duration_months: 12
+      current_investments: false
+      savings_balance: 10000
+      vulnerability_flag: false
+      high_cost_debt: false
+    expected_segment: "SEG-INV-006"
+    expected_suggestion: "SUG-INV-006"
+    typical_turns: 3-5
+    expected_outcome: "EMIT"
+  
+  # ────────────────────────────────────────────────────────────────────────────
+  # STRUCTURED DEPOSITS (1 situation)
+  # ────────────────────────────────────────────────────────────────────────────
+  
+  maturing_deposit:
+    id: "7"
+    name: "Maturing Fixed-Rate Deposit — Reinvestment Direction"
+    situation_id: "SIT-SD-001"
+    intent_id: "INTENT-MATURING-DEPOSIT"
+    segment_id: "SEG-SD-001"
+    description: "Consumer's fixed deposit maturing soon"
+    trigger: "Firm initiative"
+    bank_data:
+      party_ref: "CUST-SD-001"
+      deposit_balance: 50000
+      deposit_maturity_days: 30
+      reinvestment_instruction: false
+      vulnerability_flag: false
+    expected_segment: "SEG-SD-001"
+    expected_suggestion: "SUG-SD-001"
+    typical_turns: 2-3
+    expected_outcome: "EMIT"
+  
+  # ────────────────────────────────────────────────────────────────────────────
+  # DC PENSION ACCUMULATION (3 situations)
+  # ────────────────────────────────────────────────────────────────────────────
+  
+  under_saving_retirement:
+    id: "8"
+    name: "Under-Saving for Retirement — Below Adequacy Benchmark"
+    situation_id: "SIT-PEN-001"
+    intent_id: "INTENT-UNDER-SAVING"
+    segment_id: "SEG-PEN-001"
+    description: "Consumer's pension contributions below recommended level"
+    trigger: "Firm initiative"
+    bank_data:
+      party_ref: "CUST-PEN-001"
+      age: 35
+      pension_contribution_pct: 5
+      active_dc_pension: true
+      projected_shortfall: true
+      vulnerability_flag: false
+      hardship_flag: false
+      years_to_retirement: 30
+    expected_segment: "SEG-PEN-001"
+    expected_suggestion: "SUG-PEN-001"
+    typical_turns: 3-5
+    expected_outcome: "EMIT"
+  
+  default_fund_disengagement:
+    id: "9"
+    name: "Default Fund Disengagement — Lifecycle Mismatch"
+    situation_id: "SIT-PEN-002"
+    intent_id: "INTENT-DEFAULT-FUND"
+    segment_id: "SEG-PEN-002"
+    description: "Consumer in 100% default fund with no active selection"
+    trigger: "Firm initiative"
+    bank_data:
+      party_ref: "CUST-PEN-002"
+      default_fund_allocation_pct: 100
+      active_fund_selection: false
+      active_dc_pension: true
+      pension_pot_value: 45000
+      vulnerability_flag: false
+      recent_engagement: false
+    expected_segment: "SEG-PEN-002"
+    expected_suggestion: "SUG-PEN-002"
+    typical_turns: 2-4
+    expected_outcome: "EMIT"
+  
+  life_event_review:
+    id: "10"
+    name: "Life Event — Contribution Review Opportunity"
+    situation_id: "SIT-PEN-003"
+    intent_id: "INTENT-LIFE-EVENT"
+    segment_id: "SEG-PEN-003"
+    description: "Consumer experienced life event (marriage, birth, promotion)"
+    trigger: "Firm initiative"
+    bank_data:
+      party_ref: "CUST-PEN-003"
+      life_event_signal: true
+      life_event_type: "promotion"
+      pension_contribution_pct: 8
+      active_dc_pension: true
+      vulnerability_flag: false
+      hardship_flag: false
+      years_to_retirement: 25
+    expected_segment: "SEG-PEN-003"
+    expected_suggestion: "SUG-PEN-003"
+    typical_turns: 3-5
+    expected_outcome: "EMIT"
+  
+  # ────────────────────────────────────────────────────────────────────────────
+  # DC PENSION DECUMULATION (4 situations)
+  # ────────────────────────────────────────────────────────────────────────────
+  
+  approaching_retirement:
+    id: "11"
+    name: "Approaching Retirement — No Decumulation Plan"
+    situation_id: "SIT-DEC-001"
+    intent_id: "INTENT-APPROACHING-RETIREMENT"
+    segment_id: "SEG-DEC-001"
+    description: "Consumer aged 45-65 with DC pension but no access plan"
+    trigger: "Firm initiative"
+    bank_data:
+      party_ref: "CUST-DEC-001"
+      age: 58
+      dc_pension_pot_value: 180000
+      decumulation_plan: false
+      in_drawdown: false
+      vulnerability_flag: false
+      db_transfer_flag: false
+    expected_segment: "SEG-DEC-001"
+    expected_suggestion: "SUG-DEC-001"
+    typical_turns: 4-6
+    expected_outcome: "EMIT"
+  
+  small_pot_decision:
+    id: "12"
+    name: "Small Pot — Imminent Retirement Decision"
+    situation_id: "SIT-DEC-002"
+    intent_id: "INTENT-SMALL-POT"
+    segment_id: "SEG-DEC-002"
+    description: "Consumer with £5k-£30k pot within 5 years of retirement"
+    trigger: "Both (consumer or firm)"
+    bank_data:
+      party_ref: "CUST-DEC-002"
+      age: 62
+      dc_pension_pot_value: 18000
+      years_to_retirement: 3
+      decumulation_plan: false
+      vulnerability_flag: false
+      trivial_commutation_eligible: false
+    expected_segment: "SEG-DEC-002"
+    expected_suggestion: "SUG-DEC-002"
+    typical_turns: 3-5
+    expected_outcome: "EMIT"
+  
+  annuity_consideration:
+    id: "13"
+    name: "Annuity Consideration — Guaranteed Income Exploration"
+    situation_id: "SIT-DEC-003"
+    intent_id: "INTENT-ANNUITY"
+    segment_id: "SEG-DEC-003"
+    description: "Consumer interested in annuity options"
+    trigger: "Consumer request"
+    bank_data:
+      party_ref: "CUST-DEC-003"
+      age: 65
+      dc_pension_pot_value: 150000
+      annuity_interest: true
+      vulnerability_flag: false
+      db_safeguarded_benefits: false
+    expected_segment: "SEG-DEC-003"
+    expected_suggestion: "SUG-DEC-003"
+    typical_turns: 4-6
+    expected_outcome: "EMIT"
+  
+  drawdown_review:
+    id: "14"
+    name: "Drawdown Review — Consumer Already in Drawdown"
+    situation_id: "SIT-DEC-004"
+    intent_id: "INTENT-DRAWDOWN-REVIEW"
+    segment_id: "SEG-DEC-004"
+    description: "Consumer in active drawdown but no review for 18+ months"
+    trigger: "Firm initiative"
+    bank_data:
+      party_ref: "CUST-DEC-004"
+      in_active_drawdown: true
+      months_since_last_review: 22
+      cash_drag_flag: true
+      recent_adviser_interaction: false
+      vulnerability_flag: false
+    expected_segment: "SEG-DEC-004"
+    expected_suggestion: "SUG-DEC-004"
+    typical_turns: 3-5
+    expected_outcome: "EMIT"
+
+# ══════════════════════════════════════════════════════════════════════════════
+# Edge Cases & Testing Scenarios
+# ══════════════════════════════════════════════════════════════════════════════
+
+edge_cases:
+  
+  vulnerability_trigger:
+    id: "15"
+    name: "[EDGE] Vulnerability Indicator"
+    situation_id: "SIT-INV-001"
+    segment_id: "SEG-INV-001"
+    description: "Consumer with vulnerability flag should trigger HUMAN_REVIEW"
+    bank_data:
+      party_ref: "CUST-EDGE-001"
+      savings_balance: 50000
+      current_investments: false
+      vulnerability_flag: true  # ← Triggers HUMAN_REVIEW
+    expected_outcome: "HUMAN_REVIEW"
+    rejection_reason: "PDC-003: Known unsuitability (vulnerability)"
+  
+  high_cost_debt:
+    id: "16"
+    name: "[EDGE] Active High-Cost Debt"
+    situation_id: "SIT-INV-001"
+    segment_id: "SEG-INV-001"
+    description: "Consumer with high-cost debt excluded from investment TS"
+    bank_data:
+      party_ref: "CUST-EDGE-002"
+      savings_balance: 30000
+      current_investments: false
+      high_cost_debt: true  # ← Excluding characteristic
+    expected_outcome: "SUPPRESS"
+    rejection_reason: "Excluding characteristic: high_cost_debt present"
+  
+  lump_sum_boundary:
+    id: "17"
+    name: "[EDGE] Lump Sum > £75k (Exit TS)"
+    situation_id: "SIT-INV-004"
+    segment_id: "SEG-INV-004"
+    description: "Lump sum exceeds TS boundary, requires full advice"
+    bank_data:
+      party_ref: "CUST-EDGE-003"
+      lump_sum_amount: 100000  # ← > £75k boundary
+      current_investments: false
+    expected_outcome: "SUPPRESS"
+    rejection_reason: "Lump sum exceeds £75k threshold (exit TS)"
+  
+  low_ml_confidence:
+    id: "18"
+    name: "[EDGE] Low ML Confidence"
+    situation_id: "SIT-INV-002"
+    segment_id: "SEG-INV-002"
+    description: "ML confidence below 95% threshold"
+    bank_data:
+      party_ref: "CUST-EDGE-004"
+      age: 28
+      # Minimal data = low confidence
+    expected_outcome: "HUMAN_REVIEW"
+    rejection_reason: "PDC-007: ML confidence below threshold"
+  
+  stale_data:
+    id: "19"
+    name: "[EDGE] Stale Bank Data"
+    situation_id: "SIT-INV-001"
+    segment_id: "SEG-INV-001"
+    description: "Bank data older than 30 days"
+    bank_data:
+      party_ref: "CUST-EDGE-005"
+      savings_balance: 40000
+      data_age_days: 45  # ← Stale
+      current_investments: false
+    expected_outcome: "HUMAN_REVIEW"
+    rejection_reason: "PDC-002: Data accuracy verification required"
+
+# ══════════════════════════════════════════════════════════════════════════════
+# Metadata
+# ══════════════════════════════════════════════════════════════════════════════
+
+metadata:
+  version: "2.0"
+  last_updated: "2026-05-05"
+  fca_reference: "PS25/22"
+  live_date: "2026-04-06"
+  total_situations: 14
+  total_scenarios: 19  # 14 standard + 5 edge cases
+  domains:
+    - "Retail Investments (6)"
+    - "Structured Deposits (1)"
+    - "DC Pension Accumulation (3)"
+    - "DC Pension Decumulation (4)"
+  coverage:
+    EMIT: 14
+    HUMAN_REVIEW: 3
+    SUPPRESS: 2

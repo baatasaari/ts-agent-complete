@@ -1,0 +1,1202 @@
+# ==============================================================================
+# FCA TARGETED SUPPORT — READY-MADE SUGGESTIONS  (v2 — Production Grade)
+# ==============================================================================
+# Regulation : PS25/22 (final rules confirmed FCA Board 26 Feb 2026)
+# Rulebook   : COBS 9B.5 — Ready-Made Suggestions
+# ------------------------------------------------------------------------------
+# DEFINITION:
+#   A ready-made suggestion is a pre-defined recommendation that a firm specifies
+#   for a consumer segment.  It is delivered to consumers who are correctly
+#   aligned with the relevant segment.  A suggestion MUST:
+#
+#   (a) COBS 9B SUITABILITY — firm must be satisfied on reasonable grounds
+#       that the suggestion is suitable for an individual who is correctly
+#       aligned with the segment AT THE TIME IT IS GIVEN.  Suitability is
+#       assessed at SEGMENT DESIGN stage, not individually at delivery.
+#       (COBS 9B.1.1(2)(b); PS25/22 para 3.8; A&O Shearman Dec 2025)
+#
+#   (b) MANDATORY LABEL — service MUST be labelled "targeted support" at
+#       the point of delivery.  This is a new mandatory disclosure.
+#       (PS25/22 para 2.8; COBS 9B)
+#
+#   (c) REQUIRED DISCLOSURES — each delivery MUST include:
+#         (i)   Statement that service is targeted support, not individualised advice
+#         (ii)  Common characteristics of the consumer segment
+#         (iii) Nature and limitations of targeted support
+#         (iv)  Any product scope limitations (own-range only, etc.)
+#         (v)   Capital at risk (where applicable)
+#         (vi)  Charge variation (if charges differ by access route)
+#         (vii) MoneyHelper signpost (all suggestions)
+#         (viii) Pension Wise signpost (pensions suggestions — COBS 19)
+#         (ix)  Projection assumptions are standardised, not guaranteed
+#       (PS25/22 Chs. 3 & 4; COBS 9B; COBS 4; COBS 16; COBS 19)
+#
+#   (d) GUIDANCE ALONGSIDE SUGGESTION — firms may deliver guidance (which
+#       can be personalised) alongside a ready-made suggestion.  Where
+#       guidance is integral to the suggestion, it must be designed within
+#       the TS framework.  (PS25/22 para 3.32)
+#
+#   (e) MULTIPLE OPTIONS — firms may include multiple suitable options within
+#       a single ready-made suggestion.  (PS25/22 para 3.32 — 'Our response')
+#
+#   (f) DO NOTHING — a valid suggestion may be 'take no action if your
+#       current position appears appropriate.'  (PS25/22 para 3.30)
+#
+# ABSOLUTE PROHIBITIONS (apply to all suggestions):
+#   - Pension pot consolidation in any form
+#   - Recommendation of a specific named annuity product
+#   - Annuity quotation (including illustrative average rates)
+#   - Non-mass-market investments, restricted mass-market investments
+#   - Leveraged products / loss exceeds investment products
+#   - Qualifying cryptoassets (as restricted mass-market investment)
+#   - Unlisted securities
+#   - DB pension transfer recommendation
+#   - PDS post-view service delivery
+#   (PS25/22 Ch.3; Mondaq Dec 2025; A&O Shearman Dec 2025)
+# ==============================================================================
+
+schema_version: "2.0"
+
+# Annuity ruleset — referenced by all annuity-adjacent suggestions
+annuity_global_rules:
+  specific_product_recommendation: PROHIBITED
+  quotation_including_illustrative: PROHIBITED
+  annuity_feature_suggestion: PERMITTED
+  access_method_direction_to_annuity: PERMITTED
+  moneyhelper_annuity_tool_referral: MANDATORY_WITHIN_SUGGESTION
+  whole_of_market_brokerage_referral: >
+    PERMITTED — must be provided AFTER TS journey ends.
+    Firm must communicate that TS journey has ended.
+    MoneyHelper tool must be directed to FIRST.
+    Must NOT include quotation or illustrative average rate.
+    Brokerage must cover a sufficient range of annuity types.
+    Referral fee received subject to existing FCA inducement rules.
+    Transparency / disclosure of referral fee required per inducement rules.
+  mandatory_break: >
+    NOT REQUIRED under final PS25/22 rules. MoneyHelper tool visit
+    serves as soft break. Firm must state TS journey has ended
+    before providing brokerage information.
+  fixed_term_annuity_with_surrender: >
+    EXCLUDED from annuity-specific TS rules — treated as standard
+    investment product suggestion.
+
+suggestions:
+
+  # ────────────────────────────────────────────────────────────────────────────
+  # RETAIL INVESTMENT SUGGESTIONS
+  # ────────────────────────────────────────────────────────────────────────────
+
+  - id: SUG-INV-001
+    version: "2.0"
+    linked_segment: SEG-INV-001
+    linked_situation: SIT-INV-001
+    label: "Open a Stocks and Shares ISA — Multi-Asset Balanced Fund"
+    suggestion_type: NEW_PRODUCT_ACTION
+
+    core_recommendation: >
+      Open a Stocks and Shares ISA and make an initial lump sum or regular
+      contribution into the firm's diversified multi-asset balanced fund,
+      to begin growing savings above the long-term real return on cash within
+      a tax-efficient wrapper.
+
+    better_position_rationale: >
+      Consumers holding significant investible cash are at risk of real-terms
+      value erosion from inflation over the medium to long term.  A diversified
+      S&S ISA investment puts the consumer in a better position by enabling
+      potential market participation within a tax-free wrapper, without requiring
+      a comprehensive individual financial assessment.
+
+    product_details:
+      primary_product: "Stocks and Shares ISA"
+      fund_type: "Multi-asset balanced fund — diversified, moderate risk"
+      fund_characteristics: "Diversified across equities, bonds, and alternatives; not leveraged; capital at risk"
+      annual_isa_allowance: £20000
+      tax_benefits: "Returns free from UK income tax and capital gains tax within ISA wrapper"
+      suggested_contribution_range:
+        lump_sum: "£1,000–£10,000 (within annual ISA allowance)"
+        regular: "£50–£500 per month (optional regular contribution)"
+      investment_horizon_assumption: "Medium to long term (5+ years)"
+
+    multiple_options:
+      - option_id: OPT-INV-001-A
+        label: "Lump sum initial investment"
+        description: "Invest a one-off amount into the ISA"
+        suitable_for: "Consumers with available cash sum to deploy"
+      - option_id: OPT-INV-001-B
+        label: "Regular monthly contribution"
+        description: "Set up a standing order for regular ISA contributions"
+        suitable_for: "Consumers who prefer to invest incrementally"
+      - option_id: OPT-INV-001-C
+        label: "Both lump sum and regular"
+        description: "Initial lump sum plus ongoing regular contributions"
+        suitable_for: "Consumers who wish to deploy available cash and build habit"
+
+    guidance_integral_to_suggestion:
+      - topic: "What a Stocks and Shares ISA is and how tax-free growth works"
+        type: FACTUAL_EXPLANATION
+        framework: WITHIN_TS_RULES
+      - topic: "What diversification means and why multi-asset reduces single-stock risk"
+        type: FACTUAL_EXPLANATION
+        framework: WITHIN_TS_RULES
+
+    mandatory_disclosures:
+      - id: DISC-001
+        type: SERVICE_LABEL
+        text: "This service is targeted support. It is not personalised financial advice."
+      - id: DISC-002
+        type: NATURE_AND_LIMITATIONS
+        text: >
+          This recommendation has been designed for a group of customers who share
+          similar financial characteristics. It has not been made based on a comprehensive
+          review of your individual financial circumstances.
+      - id: DISC-003
+        type: SEGMENT_CHARACTERISTICS
+        text: >
+          You have been matched to this suggestion because: you hold ≥ £10,000 in
+          cash savings, you do not currently hold a Stocks and Shares ISA or investment
+          fund with us, and you have held your account with us for at least 12 months.
+      - id: DISC-004
+        type: CAPITAL_AT_RISK
+        text: "The value of investments can fall as well as rise. You may get back less than you invest."
+      - id: DISC-005
+        type: PRODUCT_SCOPE
+        text: >
+          This suggestion is based on products available from [firm name].
+          Other providers may offer different products that may also be suitable.
+      - id: DISC-006
+        type: MONEYHELPER_SIGNPOST
+        text: "For free impartial guidance on investing, visit MoneyHelper at moneyhelper.org.uk"
+        url: "https://www.moneyhelper.org.uk"
+      - id: DISC-007
+        type: CHARGE_VARIATION
+        condition: "Include only if product charges differ between TS and non-TS access routes"
+        text: "The charges for this product may differ depending on how you access it."
+
+    cobs_9b_suitability_basis: >
+      Consumers in SEG-INV-001 hold material investible cash (£10k–£100k), have
+      no existing investment product, are not in financial hardship, are not
+      vulnerable, and are not high net worth. A diversified multi-asset balanced
+      fund in an ISA wrapper is appropriate for this population at segment level.
+      Fund is not leveraged, not restricted, and not concentrated. Capital-at-risk
+      characteristic is disclosed. Suitability assessed at segment design stage
+      under COBS 9B — not individually at delivery.
+
+    prohibited_extensions:
+      - "Must not suggest specific ETFs, individual equities, or concentrated products"
+      - "Must not suggest products outside FCA mass-market investment classification"
+      - "Must not suggest pension consolidation in connection with this suggestion"
+
+    cobs_4_communication_check: >
+      All delivery communications must be fair, clear, and not misleading.
+      Must not imply guaranteed returns. Must not present TS as equivalent
+      to personalised regulated advice.
+
+    monitoring_trigger:
+      kpis:
+        - "ISA opening conversion rate within 30 days of suggestion"
+        - "12-month fund retention rate by segment"
+        - "Capital-at-risk disclosure acknowledgement rate"
+        - "Complaint rate by segment"
+      review_cadence: "Minimum annually; immediate review if complaint rate > 0.5%"
+
+  # --------------------------------------------------------------------------
+
+  - id: SUG-INV-002
+    version: "2.0"
+    linked_segment: SEG-INV-002
+    linked_situation: SIT-INV-002
+    label: "Begin Regular Investment — Entry-Level ISA Starter Plan"
+    suggestion_type: NEW_PRODUCT_ACTION_REGULAR_CONTRIBUTION
+
+    core_recommendation: >
+      Open a Stocks and Shares ISA and begin a regular monthly contribution into
+      a diversified entry-level fund, starting from an accessible monthly amount
+      to build an investing habit and benefit from pound-cost averaging over time.
+
+    better_position_rationale: >
+      First-time investors who remain in cash due to lack of knowledge miss
+      potential long-term compounding.  A low-barrier regular ISA plan removes
+      complexity and puts the consumer in a better position to begin building
+      long-term wealth within a tax-efficient wrapper.
+
+    product_details:
+      primary_product: "Stocks and Shares ISA — regular savings plan"
+      fund_type: "Diversified global equity or multi-asset starter fund"
+      suggested_monthly_contribution: "£25–£250 per month (firm may pre-populate a suggested starting amount)"
+      investment_horizon_assumption: "Long term (10+ years)"
+      cost_note: "Ongoing Charges Figure (OCF) must be disclosed per COBS rules"
+
+    guidance_integral_to_suggestion:
+      - topic: "How regular investing and pound-cost averaging works"
+        type: EDUCATIONAL_GUIDANCE
+        framework: WITHIN_TS_RULES
+      - topic: "What 'capital at risk' means in practice for a diversified fund"
+        type: EXPLANATORY_GUIDANCE
+        framework: WITHIN_TS_RULES
+
+    mandatory_disclosures:
+      - id: DISC-001
+        type: SERVICE_LABEL
+        text: "This service is targeted support. It is not personalised financial advice."
+      - id: DISC-002
+        type: NATURE_AND_LIMITATIONS
+      - id: DISC-003
+        type: SEGMENT_CHARACTERISTICS
+        text: >
+          You have been matched to this suggestion because: you are aged 18–40,
+          you are employed with a regular income, you have not previously held
+          an investment product with us, and your savings balance is between
+          £500 and £25,000.
+      - id: DISC-004
+        type: CAPITAL_AT_RISK
+      - id: DISC-005
+        type: PRODUCT_SCOPE
+      - id: DISC-006
+        type: MONEYHELPER_SIGNPOST
+
+    cobs_9b_suitability_basis: >
+      Consumers in SEG-INV-002 are young, employed, have no prior investment,
+      and hold modest savings.  A low monthly contribution into a diversified
+      starter fund presents minimal complexity, no leverage, and is appropriate
+      for a long accumulation horizon.  Suitability holds at segment level
+      under COBS 9B.
+
+    prohibited_extensions:
+      - "Must not suggest speculative or single-sector funds"
+      - "Must not suggest contribution amounts that exceed ISA annual allowance"
+
+    cobs_4_communication_check: "All comms must be fair, clear, not misleading; no guaranteed return language"
+
+    monitoring_trigger:
+      kpis:
+        - "ISA open and regular payment setup rate"
+        - "12-month plan retention rate"
+        - "Early cancellation rate (< 3 months)"
+
+  # --------------------------------------------------------------------------
+
+  - id: SUG-INV-003
+    version: "2.0"
+    linked_segment: SEG-INV-003
+    linked_situation: SIT-INV-003
+    label: "Use Your ISA Allowance Before Tax Year End"
+    suggestion_type: TIME_BOUNDED_NEW_PRODUCT_ACTION
+
+    core_recommendation: >
+      Open a Stocks and Shares ISA (or contribute to an existing one) before
+      5 April [current tax year] to use your remaining annual ISA allowance.
+      Invest via a lump sum or set up a regular contribution into a diversified fund.
+
+    better_position_rationale: >
+      An unused ISA allowance cannot be carried forward.  Acting before the
+      deadline preserves tax-free investment capacity permanently.  Consumer is
+      in a better position by securing the allowance rather than allowing it to lapse.
+
+    product_details:
+      primary_product: "Stocks and Shares ISA"
+      fund_type: "Age-appropriate diversified fund (firm to populate based on sub-segment age)"
+      deadline: "5 April [current tax year]"
+      annual_isa_allowance: £20000
+      contribution_options:
+        - "Lump sum up to remaining annual allowance"
+        - "Regular monthly contribution commencing before 5 April"
+      remaining_allowance_note: "System should calculate and display remaining ISA allowance"
+
+    mandatory_disclosures:
+      - id: DISC-001
+        type: SERVICE_LABEL
+      - id: DISC-002
+        type: NATURE_AND_LIMITATIONS
+      - id: DISC-003
+        type: SEGMENT_CHARACTERISTICS
+        text: >
+          You have been matched to this suggestion because: you have not made a
+          Stocks and Shares ISA contribution this tax year, you hold savings of
+          at least £500, and the tax year end is approaching.
+      - id: DISC-004
+        type: CAPITAL_AT_RISK
+      - id: DISC-005
+        type: PRODUCT_SCOPE
+      - id: DISC-006
+        type: MONEYHELPER_SIGNPOST
+      - id: DISC-008
+        type: DEADLINE_AND_ALLOWANCE
+        text: "The annual ISA allowance is £20,000. Any unused allowance cannot be carried forward after 5 April."
+
+    cobs_9b_suitability_basis: >
+      Consumer has cash, no S&S ISA, and allowance about to lapse permanently.
+      Diversified fund is not high-risk.  Time constraint makes prompt action
+      the clearly suitable direction for consumers in this segment.
+
+    prohibited_extensions:
+      - "Must not suggest exceeding annual ISA allowance"
+      - "Must not suggest cash ISA as Stocks and Shares ISA substitute without disclosure of difference"
+
+    cobs_4_communication_check: "Deadline communications must be factual and not create undue pressure"
+
+    monitoring_trigger:
+      kpis:
+        - "ISA opening conversion rate within 90-day window"
+        - "Post-tax-year retention rate"
+
+  # --------------------------------------------------------------------------
+
+  - id: SUG-INV-004
+    version: "2.0"
+    linked_segment: SEG-INV-004
+    linked_situation: SIT-INV-004
+    label: "Invest Your Lump Sum — ISA and General Investment Account"
+    suggestion_type: NEW_PRODUCT_ACTION_LUMP_SUM
+
+    core_recommendation: >
+      Invest your lump sum into a Stocks and Shares ISA (up to the annual
+      allowance) and, if the amount exceeds the allowance, into a General
+      Investment Account — using a diversified multi-asset fund appropriate
+      for a medium-term horizon.
+
+    better_position_rationale: >
+      Leaving a windfall in cash without a plan risks inflation erosion and
+      missed investment opportunity.  Structured investment into a diversified
+      tax-efficient wrapper puts the consumer in a better position by
+      capturing potential market returns with appropriate diversification.
+
+    product_details:
+      primary_product: "Stocks and Shares ISA (up to £20,000 annual allowance)"
+      secondary_product: "General Investment Account (for amounts exceeding ISA allowance)"
+      fund_type: "Diversified multi-asset fund — balanced to moderate risk"
+      investment_horizon_assumption: "Medium term (5+ years)"
+      gia_note: >
+        GIA returns subject to income tax and CGT above annual exemptions.
+        This is informational guidance delivered alongside the suggestion;
+        not tax advice.
+
+    multiple_options:
+      - option_id: OPT-INV-004-A
+        label: "ISA only (amount within annual allowance)"
+        description: "Full lump sum into S&S ISA if within annual allowance"
+      - option_id: OPT-INV-004-B
+        label: "ISA up to allowance + GIA for remainder"
+        description: "Split investment for amounts above £20,000"
+      - option_id: OPT-INV-004-C
+        label: "Regular drawdown from lump sum via monthly contributions"
+        description: "Hold in cash; set up regular monthly transfers into ISA over multiple months"
+
+    guidance_integral_to_suggestion:
+      - topic: "Difference between ISA tax treatment and GIA tax treatment"
+        type: TAX_INFORMATION_GUIDANCE
+        framework: WITHIN_TS_RULES
+        caveat: "Consumer should consider their individual tax position; this is not tax advice"
+
+    mandatory_disclosures:
+      - id: DISC-001
+        type: SERVICE_LABEL
+      - id: DISC-002
+        type: NATURE_AND_LIMITATIONS
+      - id: DISC-003
+        type: SEGMENT_CHARACTERISTICS
+        text: >
+          You have been matched to this suggestion because: you have recently
+          received or declared a lump sum of between £5,000 and £75,000, and
+          you have not placed an investment instruction for these funds.
+      - id: DISC-004
+        type: CAPITAL_AT_RISK
+      - id: DISC-005
+        type: PRODUCT_SCOPE
+      - id: DISC-006
+        type: MONEYHELPER_SIGNPOST
+      - id: DISC-009
+        type: TAX_INFORMATION
+        text: "Returns from a GIA may be subject to income tax and capital gains tax. Please consider your own tax position."
+
+    escalation_rule: >
+      If consumer declares or confirms lump sum > £75,000 at any point during
+      the journey — STOP. Exit TS. Signpost to regulated financial adviser.
+      Do not deliver this suggestion.
+
+    cobs_9b_suitability_basis: >
+      Segment holds mid-range lump sum (£5k–£75k), no investment plan, no debt
+      stress, no vulnerability.  Diversified multi-asset fund in ISA/GIA is
+      appropriate for medium-term lump sum at this scale.  Assumption about
+      no imminent expenditure is surfaced and consumer-confirmed in journey.
+
+    prohibited_extensions:
+      - "Must not suggest investment products outside mass-market classification"
+      - "Must not provide tax advice (informational guidance only on GIA vs ISA)"
+      - "Must not deliver to consumer who declares amount > £75,000 — escalate"
+
+    cobs_4_communication_check: "Tax information must be clearly labelled as informational, not advice"
+
+    monitoring_trigger:
+      kpis:
+        - "Investment conversion rate within 30 days"
+        - "12-month portfolio retention"
+        - "Escalation rate (amounts > £75k identified)"
+
+  # --------------------------------------------------------------------------
+
+  - id: SUG-INV-005
+    version: "2.0"
+    linked_segment: SEG-INV-005
+    linked_situation: SIT-INV-005
+    label: "Review Your Investment — Do Nothing or Re-engage"
+    suggestion_type: REVIEW_PROMPT_OR_DO_NOTHING
+
+    core_recommendation: >
+      Your investment account has been inactive for over 12 months.
+      EITHER: your current investment appears broadly appropriate and you
+      may wish to make no changes at this time (do nothing) — OR: if your
+      circumstances have changed, consider whether your investment still
+      reflects what you need.
+
+    better_position_rationale: >
+      Consumers who are disengaged from their investments may be unaware of
+      portfolio drift or changed product terms.  A re-engagement prompt puts
+      the consumer in a better position by making the current state visible —
+      even if the outcome is a confirmed do-nothing decision.
+
+    do_nothing_pathway:
+      label: "Your investment appears broadly appropriate — no action required"
+      conditions: >
+        Consumer reviews and confirms current fund and contribution level
+        remain consistent with their situation (as described in the segment).
+      outcome_record: "Log confirmed do-nothing decision with timestamp"
+
+    re_engage_pathway:
+      label: "Consider reviewing your investment"
+      conditions: "Consumer indicates circumstances have changed"
+      action: "Route to relevant TS situation (e.g. SIT-INV-001 if cash accumulation has grown)"
+
+    mandatory_disclosures:
+      - id: DISC-001
+        type: SERVICE_LABEL
+      - id: DISC-002
+        type: NATURE_AND_LIMITATIONS
+      - id: DISC-003
+        type: SEGMENT_CHARACTERISTICS
+        text: >
+          You have been matched to this suggestion because: you hold an investment
+          account with us that has had no activity for over 12 months.
+      - id: DISC-004
+        type: CAPITAL_AT_RISK
+      - id: DISC-006
+        type: MONEYHELPER_SIGNPOST
+
+    cobs_9b_suitability_basis: >
+      Consumer holds an existing investment account with no activity.  A
+      re-engagement prompt with a 'do nothing is valid' pathway is suitable
+      for all consumers in SEG-INV-005 — the suggestion does not itself direct
+      to a product purchase, reducing suitability risk.  PS25/22 para 3.30
+      explicitly validates 'do nothing' as a ready-made suggestion.
+
+    prohibited_extensions:
+      - "Must not present re-engagement as a requirement to add new money"
+      - "Must not redirect directly to a new fund without verifying situation"
+
+    monitoring_trigger:
+      kpis:
+        - "Do-nothing confirmation rate"
+        - "Re-engagement rate leading to further TS journey"
+        - "Post-interaction product retention rate"
+
+  # --------------------------------------------------------------------------
+
+  - id: SUG-INV-006
+    version: "2.0"
+    linked_segment: SEG-INV-006
+    linked_situation: SIT-INV-006
+    label: "Add a Regular Investment to Your Savings Habit"
+    suggestion_type: NEW_PRODUCT_ACTION_REGULAR_CONTRIBUTION
+
+    core_recommendation: >
+      You already save regularly into cash. Consider adding a regular monthly
+      contribution into a Stocks and Shares ISA alongside your savings habit,
+      to begin building an investment portfolio alongside your cash reserve.
+
+    better_position_rationale: >
+      A consumer with an established savings habit has demonstrated financial
+      discipline.  Adding a regular investment contribution alongside cash
+      saving puts the consumer in a better position by diversifying their
+      long-term wealth-building beyond low-yield cash.
+
+    product_details:
+      primary_product: "Stocks and Shares ISA — regular savings plan"
+      fund_type: "Diversified multi-asset or global equity starter fund"
+      suggested_contribution:
+        amount_range: "10–25% of existing regular cash savings amount"
+        note: "Firm may pre-populate a suggested amount; consumer to confirm"
+      investment_horizon: "Long term (10+ years)"
+
+    mandatory_disclosures:
+      - id: DISC-001
+        type: SERVICE_LABEL
+      - id: DISC-002
+        type: NATURE_AND_LIMITATIONS
+      - id: DISC-003
+        type: SEGMENT_CHARACTERISTICS
+        text: >
+          You have been matched to this suggestion because: you have saved
+          regularly into a cash account (≥ £50/month for ≥ 6 months) and
+          you do not currently hold a Stocks and Shares ISA with us.
+      - id: DISC-004
+        type: CAPITAL_AT_RISK
+      - id: DISC-005
+        type: PRODUCT_SCOPE
+      - id: DISC-006
+        type: MONEYHELPER_SIGNPOST
+
+    cobs_9b_suitability_basis: >
+      Consumer has demonstrated sustained surplus cash; no high-cost debt;
+      no vulnerability.  A modest incremental investment contribution alongside
+      existing savings is appropriate at segment level.
+
+    monitoring_trigger:
+      kpis:
+        - "ISA opening rate"
+        - "6-month regular payment continuation rate"
+
+  # ────────────────────────────────────────────────────────────────────────────
+  # STRUCTURED DEPOSIT SUGGESTION
+  # ────────────────────────────────────────────────────────────────────────────
+
+  - id: SUG-SD-001
+    version: "2.0"
+    linked_segment: SEG-SD-001
+    linked_situation: SIT-SD-001
+    label: "Reinvest Your Maturing Deposit — Cash, Structured Deposit, or Investment"
+    suggestion_type: MATURITY_REINVESTMENT_DIRECTION
+
+    core_recommendation: >
+      Your [product name] matures on [date].  You have three options to consider:
+        Option A — Roll into a new fixed-rate deposit or structured deposit.
+        Option B — Transfer into a Stocks and Shares ISA or investment fund.
+        Option C — Move to an easy-access savings account temporarily while you decide.
+      This suggestion presents these options and directs you to the most suitable
+      starting point based on your profile.
+
+    multiple_options:
+      - option_id: OPT-SD-001-A
+        label: "New fixed-rate deposit or structured deposit"
+        description: "Maintain capital certainty; different rate/term available"
+        in_scope: true
+      - option_id: OPT-SD-001-B
+        label: "Stocks and Shares ISA or investment fund"
+        description: "Market-based potential growth; capital at risk; tax-efficient"
+        in_scope: true
+        sub_suggestion: SUG-INV-001
+      - option_id: OPT-SD-001-C
+        label: "Easy-access savings account (temporary)"
+        description: "Hold while deciding; may be followed by further TS journey"
+        in_scope: true
+        note: "Guidance only; not a TS ready-made suggestion"
+
+    mandatory_disclosures:
+      - id: DISC-001
+        type: SERVICE_LABEL
+      - id: DISC-002
+        type: NATURE_AND_LIMITATIONS
+      - id: DISC-003
+        type: SEGMENT_CHARACTERISTICS
+        text: >
+          You have been matched to this suggestion because: you hold a
+          maturing deposit with us maturing within 60 days, and you have
+          not placed a reinvestment instruction.
+      - id: DISC-004
+        type: CAPITAL_AT_RISK
+        condition: "Required if investment option is included in suggestion"
+      - id: DISC-005
+        type: PRODUCT_SCOPE
+      - id: DISC-006
+        type: MONEYHELPER_SIGNPOST
+
+    cobs_9b_suitability_basis: >
+      Consumer holds a maturing deposit with no reinvestment plan.  Presenting
+      structured reinvestment options (deposit, investment, easy-access) is
+      suitable for all consumers in SEG-SD-001.  Options are mass-market;
+      capital at risk is disclosed for investment option.
+
+    monitoring_trigger:
+      kpis:
+        - "Option selection rate by type"
+        - "Reinvestment completion rate within 30 days of maturity"
+        - "Post-maturity complaint rate"
+
+  # ────────────────────────────────────────────────────────────────────────────
+  # DC PENSION ACCUMULATION SUGGESTIONS
+  # ────────────────────────────────────────────────────────────────────────────
+
+  - id: SUG-PEN-001
+    version: "2.0"
+    linked_segment: SEG-PEN-001
+    linked_situation: SIT-PEN-001
+    label: "Increase Your Pension Contribution Rate"
+    suggestion_type: EXISTING_PRODUCT_ACTION_CONTRIBUTION_INCREASE
+
+    core_recommendation: >
+      Based on your pension pot and current contribution rate, your projected
+      retirement income may be below a reasonable target.  Consider increasing
+      your contribution rate by [X]% to improve your projected outcome —
+      particularly if your employer will match any increase.
+
+    better_position_rationale: >
+      Consumers at or below the auto-enrolment minimum face a material
+      retirement income shortfall.  Early contribution increases have a
+      compounding effect far exceeding late-stage corrections.  A defined
+      contribution rate increase puts the consumer in a materially better
+      retirement position.
+
+    product_details:
+      action: "Increase employee pension contribution rate"
+      suggested_increase_bands:
+        - band_id: BAND-A
+          from: "At/below AE minimum (≤ 8% combined)"
+          to: "10% combined"
+          employer_match_note: "Check if employer matches above minimum"
+        - band_id: BAND-B
+          from: "10% combined"
+          to: "12% combined"
+          employer_match_note: "Many schemes match up to 12–15% — check scheme rules"
+      projection_display:
+        type: STANDARDISED_ILLUSTRATION
+        disclaimer: >
+          This projection uses standardised assumptions.  It is not a
+          personalised retirement forecast and is not guaranteed.
+          Actual outcomes will depend on future investment performance,
+          inflation, and your personal circumstances.
+        assumptions_basis: "COBS illustration standards (standardised growth rates)"
+
+    guidance_integral_to_suggestion:
+      - topic: "How employer matching works and how to check the firm's scheme rules"
+        type: INFORMATIONAL_GUIDANCE
+        framework: WITHIN_TS_RULES
+      - topic: "How pension tax relief works at basic rate"
+        type: INFORMATIONAL_GUIDANCE
+        framework: WITHIN_TS_RULES
+        caveat: "Tax treatment depends on individual circumstances"
+
+    mandatory_disclosures:
+      - id: DISC-001
+        type: SERVICE_LABEL
+      - id: DISC-002
+        type: NATURE_AND_LIMITATIONS
+      - id: DISC-003
+        type: SEGMENT_CHARACTERISTICS
+        text: >
+          You have been matched to this suggestion because: you are aged 25–57,
+          your current pension contribution rate is at or below the auto-enrolment
+          minimum, and your projected retirement income appears below a reasonable
+          target based on standardised assumptions.
+      - id: DISC-010
+        type: PROJECTION_DISCLAIMER
+        text: >
+          Projections shown use standardised assumptions and are not
+          personalised financial forecasts. Actual retirement income will vary.
+      - id: DISC-011
+        type: OTHER_PENSION_DISCLOSURE
+        text: >
+          This suggestion is based on the pension you hold with us.  If you
+          have other pension savings elsewhere, your overall position may differ.
+          Please consider all your pensions when making a decision.
+      - id: DISC-006
+        type: MONEYHELPER_SIGNPOST
+        url: "https://www.moneyhelper.org.uk"
+      - id: DISC-012
+        type: PENSION_WISE_SIGNPOST
+        text: >
+          For free impartial pensions guidance, including on how to build up
+          your pension, visit MoneyHelper / Pension Wise at moneyhelper.org.uk
+
+    prohibited_extensions:
+      - "MUST NOT suggest pension consolidation in connection with this suggestion"
+      - "MUST NOT suggest specific fund changes alongside contribution increase without separate segment match"
+      - "MUST NOT present projection as a personalised financial plan or guaranteed outcome"
+
+    cobs_9b_suitability_basis: >
+      Segment is working-age, at/below AE minimum, projected shortfall evident
+      at segment level, not in hardship, not vulnerable.  Increasing contributions
+      within the same existing scheme carries no product change risk.  Suitable
+      for all correctly aligned consumers in SEG-PEN-001 under COBS 9B.
+
+    cobs_4_communication_check: "Projection illustrations must comply with COBS illustration rules; not misleading"
+
+    monitoring_trigger:
+      kpis:
+        - "Contribution increase take-up rate"
+        - "12-month contribution retention rate"
+        - "Segment-level projected income improvement post-suggestion"
+        - "Complaint rate"
+
+  # --------------------------------------------------------------------------
+
+  - id: SUG-PEN-002
+    version: "2.0"
+    linked_segment: SEG-PEN-002
+    linked_situation: SIT-PEN-002
+    label: "Switch to an Age-Appropriate Pension Fund"
+    suggestion_type: EXISTING_PRODUCT_ACTION_FUND_SWITCH
+
+    core_recommendation: >
+      You are invested in the default pension fund and have never made an active
+      fund choice.  Based on your age, there may be a more appropriate fund
+      within our pension range.  Consider switching to [fund name — age-band
+      appropriate option] which is designed for members in your life stage.
+
+    product_details:
+      action: "Fund switch within existing DC pension scheme"
+      fund_options_by_age_band:
+        - band: GROWTH
+          age_range: "25–35"
+          fund_type: "Higher growth equity-tilted fund"
+          rationale: "Long accumulation horizon supports higher equity allocation"
+          risk_category: HIGH_GROWTH
+        - band: ACCUMULATION
+          age_range: "36–50"
+          fund_type: "Balanced multi-asset fund"
+          rationale: "Medium horizon; moderate growth with diversification"
+          risk_category: BALANCED
+        - band: PRE_RETIREMENT
+          age_range: "51–60"
+          fund_type: "Cautious / capital preservation fund"
+          rationale: "Approaching retirement; de-risking appropriate"
+          risk_category: CAUTIOUS
+      existing_fund_retained_option: >
+        Consumer may confirm they wish to remain in the default fund ('do
+        nothing' pathway — valid per PS25/22 para 3.30).
+
+    guidance_integral_to_suggestion:
+      - topic: "What the different fund risk categories mean"
+        type: EXPLANATORY_GUIDANCE
+        framework: WITHIN_TS_RULES
+      - topic: "What lifestyling means and how it affects funds approaching retirement"
+        type: INFORMATIONAL_GUIDANCE
+        framework: WITHIN_TS_RULES
+
+    mandatory_disclosures:
+      - id: DISC-001
+        type: SERVICE_LABEL
+      - id: DISC-002
+        type: NATURE_AND_LIMITATIONS
+      - id: DISC-003
+        type: SEGMENT_CHARACTERISTICS
+        text: >
+          You have been matched to this suggestion because: you are invested
+          100% in the default fund, you have never made an active fund choice,
+          and you are in the [age band] stage of your pension journey.
+      - id: DISC-004
+        type: CAPITAL_AT_RISK
+        text: "Investment returns are not guaranteed. The value of your pension can fall as well as rise."
+      - id: DISC-013
+        type: INDIVIDUAL_RISK_DISCLAIMER
+        text: >
+          This suggestion has been designed for a group of members in your age
+          band. It has not been based on a comprehensive assessment of your
+          individual attitude to risk, financial situation, or future plans.
+      - id: DISC-006
+        type: MONEYHELPER_SIGNPOST
+      - id: DISC-012
+        type: PENSION_WISE_SIGNPOST
+
+    cobs_9b_suitability_basis: >
+      Segment uses three objective criteria (default-only holding, no choice
+      history, age band) to produce three lifecycle sub-groups.  Fund options
+      are firm's regulated pension funds — not high-risk, not leveraged.
+      Assumption of broad age-band risk appetite is not material given fund
+      category breadth.  Suitability confirmed at segment level under COBS 9B.
+
+    prohibited_extensions:
+      - "Must not suggest SIPPs with restricted investments"
+      - "Must not suggest DB transfers"
+      - "Must not use a detailed risk questionnaire that approaches individual profiling"
+
+    monitoring_trigger:
+      kpis:
+        - "Fund switch rate by age band"
+        - "24-month fund retention rate"
+        - "Do-nothing confirmation rate"
+        - "Post-switch complaint rate"
+
+  # --------------------------------------------------------------------------
+
+  - id: SUG-PEN-003
+    version: "2.0"
+    linked_segment: SEG-PEN-003
+    linked_situation: SIT-PEN-003
+    label: "Review Your Pension Contributions After Your Life Change"
+    suggestion_type: EXISTING_PRODUCT_ACTION_CONTRIBUTION_REVIEW
+
+    core_recommendation: >
+      Your financial circumstances appear to have changed recently.  This may
+      be a good time to consider whether you could increase your pension
+      contributions to take advantage of your improved position — especially
+      if your employer offers matching contributions.
+
+    product_details:
+      action: "Review and potentially increase pension contribution rate"
+      suggested_review_prompt:
+        question: "Do you think you could afford to put a bit more into your pension each month?"
+        suggested_increase: "Try increasing by 1–3% of salary as a starting point"
+        employer_match_check: "Does your employer offer to match any additional contributions?"
+
+    mandatory_disclosures:
+      - id: DISC-001
+        type: SERVICE_LABEL
+      - id: DISC-002
+        type: NATURE_AND_LIMITATIONS
+      - id: DISC-003
+        type: SEGMENT_CHARACTERISTICS
+        text: >
+          You have been matched to this suggestion because: a recent change
+          in your financial position (such as a salary increase or reduced
+          outgoings) suggests you may have more capacity to save for retirement.
+      - id: DISC-011
+        type: OTHER_PENSION_DISCLOSURE
+      - id: DISC-010
+        type: PROJECTION_DISCLAIMER
+      - id: DISC-006
+        type: MONEYHELPER_SIGNPOST
+      - id: DISC-012
+        type: PENSION_WISE_SIGNPOST
+
+    prohibited_extensions:
+      - "MUST NOT suggest pension consolidation"
+      - "MUST NOT present as a comprehensive retirement review"
+
+    cobs_9b_suitability_basis: >
+      Segment is life-event triggered, objective transactional evidence, active
+      DC member, not in hardship, not vulnerable. Contribution rate review within
+      same scheme is low-risk and appropriate for all correctly aligned consumers.
+
+    monitoring_trigger:
+      kpis:
+        - "Contribution increase rate"
+        - "Consumer confirmation rate (life event confirmed)"
+
+  # ────────────────────────────────────────────────────────────────────────────
+  # DC PENSION DECUMULATION SUGGESTIONS
+  # ────────────────────────────────────────────────────────────────────────────
+
+  - id: SUG-DEC-001
+    version: "2.0"
+    linked_segment: SEG-DEC-001
+    linked_situation: SIT-DEC-001
+    label: "Start Planning How You'll Access Your Pension"
+    suggestion_type: DECUMULATION_PATHWAY_DIRECTION_AND_REFERRAL
+
+    core_recommendation: >
+      You are approaching retirement and have not yet chosen how to access
+      your pension savings.  There are two main routes to consider:
+        Pathway A — Drawdown: keep your pension invested and withdraw flexibly.
+        Pathway B — Annuity: exchange your pension for a guaranteed income for life.
+      We suggest you explore both options and book a free Pension Wise appointment
+      before making any decision.
+
+    multiple_options:
+      - option_id: OPT-DEC-001-A
+        label: "Explore income drawdown"
+        description: >
+          Pension remains invested; you choose how much and when to withdraw.
+          Value can rise or fall. Potential for investment growth.
+        action: "Direct to firm's drawdown illustration tool or drawdown initiation pathway"
+        type: DIRECTIONAL_ONLY
+        note: "Not a specific drawdown product recommendation — directional exploration only"
+      - option_id: OPT-DEC-001-B
+        label: "Explore annuity options"
+        description: >
+          Exchange pension pot for a guaranteed income for life.
+          Amount depends on your pot size and market rates at the time.
+        action: "Direct to MoneyHelper annuity comparison tool"
+        moneyhelper_annuity_tool: MANDATORY
+        whole_of_market_brokerage: >
+          May be provided AFTER TS journey ends. See annuity_global_rules.
+        specific_annuity_product: PROHIBITED
+        quotation: PROHIBITED
+      - option_id: OPT-DEC-001-C
+        label: "Do nothing yet — book a Pension Wise appointment first"
+        description: "Get free impartial guidance before deciding"
+        action: "Signpost to Pension Wise booking"
+        type: DO_NOTHING_SIGNPOST
+
+    mandatory_disclosures:
+      - id: DISC-001
+        type: SERVICE_LABEL
+      - id: DISC-002
+        type: NATURE_AND_LIMITATIONS
+      - id: DISC-003
+        type: SEGMENT_CHARACTERISTICS
+        text: >
+          You have been matched to this suggestion because: you have a DC pension
+          with us, you are aged 45–65, and you have not yet chosen how to access
+          your pension savings.
+      - id: DISC-004
+        type: CAPITAL_AT_RISK
+        text: "If you choose drawdown, the value of your pension can fall as well as rise."
+      - id: DISC-014
+        type: ANNUITY_IRREVOCABILITY
+        text: "An annuity is an irreversible decision. Once purchased, it generally cannot be changed."
+      - id: DISC-006
+        type: MONEYHELPER_SIGNPOST
+        url: "https://www.moneyhelper.org.uk"
+      - id: DISC-012
+        type: PENSION_WISE_SIGNPOST
+        text: >
+          We strongly recommend you speak to Pension Wise — a free, impartial
+          government-backed guidance service — before making a final decision
+          about how to access your pension. Book at moneyhelper.org.uk/pensionwise
+        cobs_19_compliance: MANDATORY
+      - id: DISC-015
+        type: NO_CONSOLIDATION
+        text: "This suggestion does not involve combining or moving any pension pots."
+
+    prohibited_extensions:
+      - "MUST NOT recommend a specific annuity product"
+      - "MUST NOT provide an annuity quotation (including illustrative rates)"
+      - "MUST NOT suggest pension consolidation"
+      - "MUST NOT bypass Pension Wise signpost (COBS 19 mandatory)"
+      - "MUST NOT present drawdown suggestion as guaranteed income"
+
+    cobs_9b_suitability_basis: >
+      Suggestion is directional (pathway exploration + Pension Wise referral),
+      not a final product selection.  Consumer retains full decision-making
+      responsibility after guidance.  Suitable for all consumers in SEG-DEC-001
+      under COBS 9B.  No COBS 9/9A individual suitability required.
+
+    cobs_19_compliance:
+      pension_wise_signpost: MANDATORY
+      timing: "Must be provided within or at conclusion of the TS suggestion"
+
+    monitoring_trigger:
+      kpis:
+        - "Pension Wise referral take-up rate"
+        - "Drawdown exploration initiation rate"
+        - "Annuity tool click-through rate"
+        - "Post-suggestion access decision rate at 12 months"
+        - "Complaint rate"
+
+  # --------------------------------------------------------------------------
+
+  - id: SUG-DEC-002
+    version: "2.0"
+    linked_segment: SEG-DEC-002
+    linked_situation: SIT-DEC-002
+    label: "Access Your Small Pension Pot — UFPLS or Drawdown"
+    suggestion_type: EXISTING_PRODUCT_ACTION_DECUMULATION
+
+    core_recommendation: >
+      For your pension pot of [amount], the most accessible routes are:
+        Option A — UFPLS: take one or more lump sums (25% tax-free, 75% taxed as income).
+        Option B — Drawdown: move pot into drawdown; take 25% tax-free cash; draw flexibly.
+      We suggest you book a free Pension Wise appointment before deciding.
+
+    multiple_options:
+      - option_id: OPT-DEC-002-A
+        label: "Uncrystallised Fund Pension Lump Sum (UFPLS)"
+        description: "Each withdrawal is 25% tax-free and 75% taxable income. Simple for small pots."
+        in_scope: true
+      - option_id: OPT-DEC-002-B
+        label: "Flexi-access drawdown"
+        description: "Crystallise; take 25% tax-free cash; draw flexibly. Pot remains invested."
+        in_scope: true
+      - option_id: OPT-DEC-002-C
+        label: "Do nothing — book Pension Wise first"
+        description: "Get free guidance before deciding"
+        in_scope: true
+        type: DO_NOTHING_SIGNPOST
+
+    guidance_integral_to_suggestion:
+      - topic: "How UFPLS tax treatment works (25% TFLS / 75% taxable income)"
+        type: TAX_INFORMATION_GUIDANCE
+        framework: WITHIN_TS_RULES
+        caveat: "Tax treatment depends on individual circumstances; consumer should check with HMRC or an adviser"
+      - topic: "What flexi-access drawdown means and how PCLS works"
+        type: INFORMATIONAL_GUIDANCE
+        framework: WITHIN_TS_RULES
+
+    mandatory_disclosures:
+      - id: DISC-001
+        type: SERVICE_LABEL
+      - id: DISC-002
+        type: NATURE_AND_LIMITATIONS
+      - id: DISC-003
+        type: SEGMENT_CHARACTERISTICS
+        text: >
+          You have been matched to this suggestion because: your pension pot is
+          between £5,000 and £30,000, you are within 5 years of retirement, and
+          you have not chosen an access method.
+      - id: DISC-004
+        type: CAPITAL_AT_RISK
+        text: "If you choose drawdown, your pot remains invested and its value can fall."
+      - id: DISC-016
+        type: TAX_INFORMATION_UFPLS
+        text: >
+          UFPLS and drawdown income is taxable. Withdrawals may affect your
+          income tax position. This is informational — not tax advice. Consider
+          checking with HMRC or an independent tax adviser.
+      - id: DISC-015
+        type: NO_CONSOLIDATION
+      - id: DISC-006
+        type: MONEYHELPER_SIGNPOST
+      - id: DISC-012
+        type: PENSION_WISE_SIGNPOST
+        cobs_19_compliance: MANDATORY
+
+    prohibited_extensions:
+      - "MUST NOT recommend a specific annuity product"
+      - "MUST NOT suggest pension consolidation"
+      - "MUST NOT provide tax advice"
+      - "MUST NOT bypass Pension Wise signpost"
+
+    cobs_9b_suitability_basis: >
+      Small pot (£5k–£30k), within 5 years of retirement, no access plan.
+      UFPLS and flexi-access drawdown are standard mass-market DC access routes.
+      No annuity product recommended.  Do-nothing pathway explicitly offered.
+      Suitable at segment level under COBS 9B.
+
+    monitoring_trigger:
+      kpis:
+        - "Access route selection rate (UFPLS vs drawdown)"
+        - "Pension Wise take-up rate"
+        - "Post-access complaint rate"
+
+  # --------------------------------------------------------------------------
+
+  - id: SUG-DEC-003
+    version: "2.0"
+    linked_segment: SEG-DEC-003
+    linked_situation: SIT-DEC-003
+    label: "Explore Annuity Options — Features and Comparison Referral"
+    suggestion_type: ANNUITY_FEATURES_DIRECTION_AND_REFERRAL
+
+    core_recommendation: >
+      An annuity can provide a guaranteed income for life from your pension pot.
+      Key features to consider include: income level, joint life vs single life,
+      escalation (inflation-linking), and guaranteed periods.
+      We recommend you compare options using the MoneyHelper annuity comparison
+      tool before making any decision.
+
+    annuity_feature_guidance:
+      permissible_features:
+        - "Joint life vs single life"
+        - "Escalating vs flat-rate income"
+        - "Guaranteed period (e.g. 5 or 10 years)"
+        - "Enhanced annuity for health or lifestyle conditions"
+        - "Fixed-term annuity (with surrender option — excluded from annuity-specific rules)"
+      prohibited:
+        - "Specific named annuity product recommendation"
+        - "Annuity quotation (including illustrative average rates)"
+        - "Direct referral to a specific annuity provider within the TS journey"
+
+    moneyhelper_annuity_tool:
+      referral: MANDATORY_WITHIN_SUGGESTION
+      url: "https://www.moneyhelper.org.uk/en/pensions-and-retirement/taking-your-pension/annuity-comparison-tool"
+      note: "Must be directed to BEFORE any whole-of-market brokerage information is provided"
+
+    whole_of_market_brokerage_post_journey:
+      permitted: true
+      conditions:
+        - "TS journey must formally end first — firm must communicate this to consumer"
+        - "MoneyHelper tool must be referred to within the TS journey first"
+        - "Brokerage must cover a sufficient range of annuity types including recommended type"
+        - "Referral fee subject to existing FCA inducement rules"
+        - "Referral fee disclosure to consumer REQUIRED per inducement rules"
+        - "No quotation or average rate to be provided by firm at any point"
+
+    mandatory_disclosures:
+      - id: DISC-001
+        type: SERVICE_LABEL
+      - id: DISC-002
+        type: NATURE_AND_LIMITATIONS
+      - id: DISC-003
+        type: SEGMENT_CHARACTERISTICS
+        text: >
+          You have been matched to this suggestion because: you have asked
+          about annuities or guaranteed retirement income, and you hold a
+          DC pension with us.
+      - id: DISC-014
+        type: ANNUITY_IRREVOCABILITY
+      - id: DISC-017
+        type: ANNUITY_SCOPE_LIMITATION
+        text: >
+          We are not recommending a specific annuity product. This suggestion
+          covers annuity features and directs you to an independent comparison
+          tool. Annuity terms and income depend on your personal circumstances
+          and market rates at the time of purchase.
+      - id: DISC-006
+        type: MONEYHELPER_SIGNPOST
+      - id: DISC-012
+        type: PENSION_WISE_SIGNPOST
+        cobs_19_compliance: MANDATORY
+      - id: DISC-015
+        type: NO_CONSOLIDATION
+
+    cobs_9b_suitability_basis: >
+      Consumer has expressed annuity interest; holds DC pension; is aged ≥ 50.
+      Suggestion covers features and comparison direction only — no product
+      recommendation.  Suitable for all correctly aligned consumers in
+      SEG-DEC-003 under COBS 9B.  MoneyHelper tool referral mandatory.
+
+    monitoring_trigger:
+      kpis:
+        - "MoneyHelper annuity tool click-through rate"
+        - "Whole-of-market brokerage referral rate (post-journey)"
+        - "Pension Wise take-up rate"
+        - "Post-suggestion complaint rate"
+
+  # --------------------------------------------------------------------------
+
+  - id: SUG-DEC-004
+    version: "2.0"
+    linked_segment: SEG-DEC-004
+    linked_situation: SIT-DEC-004
+    label: "Review Your Drawdown Strategy — Cash Drag or Withdrawal Rate Check"
+    suggestion_type: REVIEW_PROMPT_OR_DO_NOTHING
+
+    core_recommendation: >
+      Your drawdown account has not been reviewed for over 18 months.
+      We've noticed [cash allocation is high / your withdrawal rate may be
+      above a sustainable level].  Consider whether your current setup still
+      works for you — or confirm you're happy with how things are.
+
+    multiple_options:
+      - option_id: OPT-DEC-004-A
+        label: "Review and adjust my drawdown strategy"
+        description: "Route to relevant adjustment journey (fund switch within drawdown, withdrawal rate review)"
+        action: "Route to SUG-PEN-002 (fund switch) if cash drag; or withdrawal rate review content"
+      - option_id: OPT-DEC-004-B
+        label: "I'm happy with my current setup — do nothing"
+        description: "Confirm current position is conscious choice"
+        action: "Log confirmed do-nothing decision"
+        type: DO_NOTHING_PATHWAY
+
+    mandatory_disclosures:
+      - id: DISC-001
+        type: SERVICE_LABEL
+      - id: DISC-002
+        type: NATURE_AND_LIMITATIONS
+      - id: DISC-003
+        type: SEGMENT_CHARACTERISTICS
+        text: >
+          You have been matched to this suggestion because: you are in drawdown
+          with us, your account has had no activity for over 18 months, and
+          your account shows [high cash / elevated withdrawal rate].
+      - id: DISC-004
+        type: CAPITAL_AT_RISK
+      - id: DISC-006
+        type: MONEYHELPER_SIGNPOST
+      - id: DISC-012
+        type: PENSION_WISE_SIGNPOST
+
+    notes: >
+      PS25/22 simplified monitoring: no ongoing individual suitability obligation.
+      This is a one-off re-engagement prompt only.  Do-nothing is explicitly valid.
+
+    cobs_9b_suitability_basis: >
+      Consumer in drawdown; demonstrable inactivity and financial signal.
+      Re-engagement prompt with do-nothing pathway is suitable for all
+      consumers in SEG-DEC-004.  One-off nature consistent with PS25/22
+      simplified monitoring rules.
+
+    monitoring_trigger:
+      kpis:
+        - "Engagement rate (review selected vs do-nothing)"
+        - "Cash drag reduction rate at 12 months"
+        - "Withdrawal rate change at 12 months"
+        - "Post-prompt complaint rate"

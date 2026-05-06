@@ -1,0 +1,51 @@
+# requirements-core.txt
+# ─────────────────────────────────────────────────────────────────────────────
+# Core runtime + dev dependencies — pinned to exact versions that are known
+# to work together.  These are all that is needed to run the demo and tests.
+# Install with:  uv pip install -r requirements-core.txt
+#
+# Packages chosen to minimise Nexus footprint — all available on PyPI and
+# most LBG Nexus mirrors.  No C++ compiler required.
+# ─────────────────────────────────────────────────────────────────────────────
+
+# ── Core ML + data ────────────────────────────────────────────────────────────
+scikit-learn==1.5.1
+pandas==2.2.2
+numpy==2.2.0
+shap==0.45.1
+
+# ── Web / validation ──────────────────────────────────────────────────────────
+pydantic==2.13.3
+pydantic-core==2.46.3
+
+# ── Observability ─────────────────────────────────────────────────────────────
+structlog==24.4.0
+opentelemetry-api==1.38.0
+opentelemetry-sdk==1.38.0
+opentelemetry-semantic-conventions==0.59b0
+
+# ── Templating + config ───────────────────────────────────────────────────────
+jinja2==3.1.4
+markupsafe==3.0.2
+pyyaml==6.0.2
+aiofiles==24.1.0
+
+# ── Testing ───────────────────────────────────────────────────────────────────
+pytest==8.3.2
+pytest-asyncio==0.23.8
+pytest-cov==5.0.0
+pytest-mock==3.14.0
+freezegun==1.5.1
+coverage==7.6.12
+
+# ── Pytest dependencies ───────────────────────────────────────────────────────
+pluggy==1.6.0
+iniconfig==2.0.0
+packaging==24.2
+exceptiongroup==1.2.2
+
+# ── Python stdlib backports ───────────────────────────────────────────────────
+python-dateutil==2.9.0
+six==1.17.0
+tzdata==2025.2
+pytz==2025.2
